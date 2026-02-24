@@ -103,13 +103,28 @@ async function main() {
         pooling: "none",
         normalize: false,
       });
-      const tokens: number[][] = await out.tolist(); // shape: [1, tokens, 384] OR [tokens, 384]
-      const tokenVecs = Array.isArray(tokens[0]?.[0])
-        ? (tokens[0] as number[][])
-        : (tokens as number[][]);
+      // out.tolist() can be either number[][] or number[][][] depending on the model/runtime.
+      // Normalize to number[][] (sequence_len x dim).
+      function to2D(x: unknown): number[][] {
+        if (!Array.isArray(x))
+          throw new Error("Embedding output is not an array");
 
+        // case: number[][][]
+        if (Array.isArray(x[0]) && Array.isArray((x as any)[0][0])) {
+          return (x as number[][][])[0];
+        }
+
+        // case: number[][]
+        if (Array.isArray(x[0]) && typeof (x as any)[0][0] === "number") {
+          return x as number[][];
+        }
+
+        throw new Error("Unexpected embedding output shape");
+      }
+
+      const raw = await out.tolist();
+      const tokenVecs = to2D(raw);
       const emb = l2Normalize(meanPool(tokenVecs));
-
       if (emb.length !== 384) {
         throw new Error(
           `Embedding dim mismatch: got ${emb.length}, expected 384`,
