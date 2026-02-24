@@ -1,25 +1,22 @@
 @import "tailwindcss";
 
-/* --- Theme tokens (the real source of truth) --- */
+/* --- Theme tokens (single source of truth) --- */
 :root {
     --bg: 255 255 255; /* page background */
     --fg: 0 0 0; /* default text */
     --muted: 0 0 0 / 0.65; /* secondary text */
     --border: 0 0 0 / 0.12; /* borders */
-    --card: 255 255 255 / 0.7;
+    --card: 255 255 255 / 0.7; /* glass surfaces */
+    color-scheme: light;
 }
-img {
-    border: 0 !important;
-    outline: none !important;
-    box-shadow: none !important;
-    filter: none !important; /* לפעמים drop-shadow נראה כמו מסגרת */
-}
+
 html.dark {
     --bg: 0 0 0;
     --fg: 255 255 255;
     --muted: 255 255 255 / 0.7;
     --border: 255 255 255 / 0.16;
     --card: 255 255 255 / 0.06;
+    color-scheme: dark;
 }
 
 /* --- Base page --- */
@@ -29,12 +26,37 @@ body {
 }
 
 body {
+    margin: 0;
+    min-height: 100vh;
     background: rgb(var(--bg));
     color: rgb(var(--fg));
 }
 
-/* Optional: smoother typography + prevent weird default focus outlines */
+/* Smoother typography */
 * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* Kill “mystery borders” around media (Safari can be weird) */
+img,
+svg,
+canvas,
+video {
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* If you use drop-shadow on images explicitly, keep it.
+   Otherwise, Safari sometimes makes it look like a border when compositing. */
+img {
+    filter: none !important;
+    display: block;
+}
+
+/* Optional: prevent default focus ring ugliness.
+   (Keep accessibility: we only remove the ugly default when NOT focus-visible) */
+:focus:not(:focus-visible) {
+    outline: none;
 }

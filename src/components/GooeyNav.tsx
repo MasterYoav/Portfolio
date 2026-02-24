@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 interface GooeyNavItem {
   label: string;
@@ -19,8 +25,8 @@ export interface GooeyNavProps {
   theme?: "light" | "dark";
 
   /**
-   * If provided, clicks will NOT navigate / scroll.
-   * Instead, we call onSelect(index, item) so you can open a modal, etc.
+   * Optional hook:
+   * If provided, navigation is delegated to the parent (e.g. open a modal).
    */
   onSelect?: (index: number, item: GooeyNavItem) => void;
 }
@@ -56,6 +62,9 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
 
   const [activeIndex, setActiveIndex] = useState<number>(initialActiveIndex);
 
+  // ✅ IMPORTANT: do NOT show "pressed" state until the user actually interacts
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+
   // Seed once (stable across renders) so lint/hydration stays calm.
   const rng = useRef<() => number>(() => 0.5);
   useEffect(() => {
@@ -65,6 +74,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   }, []);
 
   const rand = () => rng.current();
+
   const noise = (n = 1) => n / 2 - rand() * n;
 
   const getXY = (
@@ -154,47 +164,42 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     textRef.current.innerText = element.innerText;
   };
 
-  const runGooeyVisuals = (liEl: HTMLElement, index: number) => {
-    if (activeIndex !== index) {
-      setActiveIndex(index);
-      updateEffectPosition(liEl);
-
-      if (filterRef.current) {
-        filterRef.current
-          .querySelectorAll(".particle")
-          .forEach((p) => p.remove());
-        makeParticles(filterRef.current);
-      }
-
-      if (textRef.current) {
-        textRef.current.classList.remove("active");
-        void textRef.current.offsetWidth;
-        textRef.current.classList.add("active");
-      }
-    }
-  };
-
   const handleClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     index: number,
   ) => {
     e.preventDefault();
 
-    const item = items[index];
+    // ✅ first interaction enables the "pressed" effect from now on
+    if (!hasInteracted) setHasInteracted(true);
+
     const aEl = e.currentTarget;
-    const liEl = (aEl.closest("li") as HTMLElement | null) ?? aEl;
+    const item = items[index];
+    const href = item?.href;
 
-    // Always update gooey visuals
-    runGooeyVisuals(liEl, index);
+    // ✅ Always update visuals after first interaction
+    setActiveIndex(index);
+    updateEffectPosition(aEl);
 
-    // If parent wants to control behavior (modal), do NOT navigate/scroll
-    if (onSelect) {
+    filterRef.current?.querySelectorAll(".particle").forEach((p) => p.remove());
+    if (filterRef.current) makeParticles(filterRef.current);
+
+    if (textRef.current) {
+      textRef.current.classList.remove("active");
+      void textRef.current.offsetWidth;
+      textRef.current.classList.add("active");
+    }
+
+    filterRef.current?.classList.add("active");
+    textRef.current?.classList.add("active");
+
+    // ✅ Delegate selection to parent (modal, etc.)
+    if (onSelect && item) {
       onSelect(index, item);
       return;
     }
 
-    // Fallback: old behavior (hash scroll / navigation)
-    const href = item?.href;
+    // ✅ Default behavior: navigate / scroll
     if (!href) return;
 
     if (href.startsWith("#")) {
@@ -219,8 +224,17 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     }
   };
 
-  useEffect(() => {
+  // ✅ Position overlay only AFTER user interacted
+  useLayoutEffect(() => {
     if (!navRef.current || !containerRef.current) return;
+
+    // 🚫 No pill on first paint until user interacts
+    if (!hasInteracted) {
+      filterRef.current?.classList.remove("active");
+      textRef.current?.classList.remove("active");
+      if (textRef.current) textRef.current.innerText = "";
+      return;
+    }
 
     const activeLi = navRef.current.querySelectorAll("li")[
       activeIndex
@@ -228,6 +242,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
 
     if (activeLi) {
       updateEffectPosition(activeLi);
+      filterRef.current?.classList.add("active");
       textRef.current?.classList.add("active");
     }
 
@@ -240,7 +255,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
 
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
-  }, [activeIndex]);
+  }, [activeIndex, theme, hasInteracted]);
 
   // Theme vars (changes the gooey colors cleanly)
   const themeVars = useMemo(() => {
@@ -414,6 +429,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             text-shadow: none;
           }
 
+          /* IMPORTANT: remove any default active background frame */
           li::after {
             content: "";
             position: absolute;
@@ -445,7 +461,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
               <li
                 key={index}
                 className={`rounded-full relative cursor-pointer transition-[color] duration-200 ease text-[var(--nav-text)] ${
-                  activeIndex === index ? "active" : ""
+                  hasInteracted && activeIndex === index ? "active" : ""
                 }`}
               >
                 <a

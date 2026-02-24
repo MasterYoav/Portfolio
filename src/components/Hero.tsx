@@ -170,15 +170,15 @@ export default function Hero() {
             <div className="relative h-[120px] w-full">
               <LogoLoop
                 logos={[
-                  { src: "logos/Python.png", alt: "Python" },
-                  { src: "logos/Java.png", alt: "Java" },
-                  { src: "logos/C++.png", alt: "cpp" },
-                  { src: "logos/Git.png", alt: "Git" },
-                  { src: "logos/Jenkins.png", alt: "Jenkins" },
-                  { src: "logos/docker.png", alt: "Docker" },
-                  { src: "logos/MongoDB.png", alt: "MongoDB" },
-                  { src: "logos/MySQL.png", alt: "MySQL" },
-                  { src: "logos/Nextjs.png", alt: "Next.js" },
+                  { src: "logos/python.png", alt: "Python" },
+                  { src: "logos/java.png", alt: "Java" },
+                  { src: "logos/cpp.png", alt: "cpp" },
+                  { src: "logos/git.png", alt: "Git" },
+                  { src: "logos/jenkins.png", alt: "Jenkins" },
+                  { src: "logos/Docker.png", alt: "Docker" },
+                  { src: "logos/mongoDB.png", alt: "MongoDB" },
+                  { src: "logos/mysql.png", alt: "MySQL" },
+                  { src: "logos/nextjs.png", alt: "Next.js" },
                 ]}
                 speed={100}
                 direction="right"
