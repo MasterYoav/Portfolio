@@ -6,6 +6,7 @@ import GooeyNav from "@/components/GooeyNav";
 import LogoLoop from "@/components/LogoLoop";
 import ProjectsModal from "@/components/ProjectsModal";
 import ContactModal from "@/components/ContactModal";
+import ChatShell from "@/components/ChatShell";
 
 const navItems = [
   { label: "Projects", href: "#projects" },
@@ -16,10 +17,13 @@ export default function Hero() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // ✅ single source of truth for the modal
+  // ✅ Modals (Projects / Contact)
   const [openModal, setOpenModal] = useState<null | "projects" | "contact">(
     null,
   );
+
+  // ✅ Chat "mode" (NOT a modal)
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -129,17 +133,29 @@ export default function Hero() {
               />
             </div>
 
-            {/* iPhone-y text bar */}
+            {/* iPhone-y text bar (NOW opens chat mode) */}
             <div className="relative z-0 -mt-8 w-full">
-              <div className="mx-auto flex w-full items-center gap-4 rounded-full border border-black/10 bg-white/70 px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.10)] backdrop-blur dark:border-white/15 dark:bg-black/35 dark:shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+              <div
+                onClick={() => setChatOpen(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setChatOpen(true);
+                }}
+                className="mx-auto flex w-full items-center gap-4 rounded-full border border-black/10 bg-white/70 px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.10)] backdrop-blur cursor-text transition hover:opacity-95 dark:border-white/15 dark:bg-black/35 dark:shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+              >
                 <span className="flex-1 select-none text-left text-base text-black/45 dark:text-white/35">
                   Ask me anything...
                 </span>
 
                 <button
                   type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setChatOpen(true);
+                  }}
                   className="grid h-11 w-11 place-items-center rounded-full bg-black text-white transition hover:opacity-90 dark:bg-white dark:text-black"
-                  aria-label="Submit"
+                  aria-label="Open chat"
                 >
                   →
                 </button>
@@ -156,7 +172,6 @@ export default function Hero() {
             timeVariance={1200}
             initialActiveIndex={0}
             theme={theme}
-            // ✅ open modal instead of scrolling
             onSelect={(_, item) => {
               if (item.href === "#projects") setOpenModal("projects");
               if (item.href === "#contact") setOpenModal("contact");
@@ -170,15 +185,15 @@ export default function Hero() {
             <div className="relative h-[120px] w-full">
               <LogoLoop
                 logos={[
-                  { src: "logos/python.png", alt: "Python" },
-                  { src: "logos/java.png", alt: "Java" },
-                  { src: "logos/cpp.png", alt: "cpp" },
-                  { src: "logos/git.png", alt: "Git" },
-                  { src: "logos/jenkins.png", alt: "Jenkins" },
-                  { src: "logos/Docker.png", alt: "Docker" },
-                  { src: "logos/mongoDB.png", alt: "MongoDB" },
-                  { src: "logos/mysql.png", alt: "MySQL" },
-                  { src: "logos/nextjs.png", alt: "Next.js" },
+                  { src: "logos/Python.png", alt: "Python" },
+                  { src: "logos/Java.png", alt: "Java" },
+                  { src: "logos/C++.png", alt: "cpp" },
+                  { src: "logos/Git.png", alt: "Git" },
+                  { src: "logos/Jenkins.png", alt: "Jenkins" },
+                  { src: "logos/docker.png", alt: "Docker" },
+                  { src: "logos/MongoDB.png", alt: "MongoDB" },
+                  { src: "logos/MySQL.png", alt: "MySQL" },
+                  { src: "logos/Nextjs.png", alt: "Next.js" },
                 ]}
                 speed={100}
                 direction="right"
@@ -195,7 +210,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ✅ Modals (no scrolling pages) */}
+      {/* ✅ Modals */}
       <ProjectsModal
         open={openModal === "projects"}
         onClose={() => setOpenModal(null)}
@@ -205,6 +220,13 @@ export default function Hero() {
         open={openModal === "contact"}
         onClose={() => setOpenModal(null)}
         theme={theme}
+      />
+
+      {/* ✅ Chat mode overlay (UI-first; we'll wire RAG next) */}
+      <ChatShell
+        open={chatOpen}
+        theme={theme}
+        onClose={() => setChatOpen(false)}
       />
     </section>
   );
