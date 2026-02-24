@@ -51,8 +51,9 @@ export async function POST(req: Request) {
         content: m.content ?? m.text ?? "",
         similarity: m.similarity ?? m.score ?? null,
       }))
-      .filter((s) => s.content && s.content.trim().length > 0);
-
+      .filter(
+        (s: { content?: string | null }) => (s.content ?? "").trim().length > 0,
+      );
     // 3) תשובה "Free + עובד":
     // מחזירים תשובה מסכמת קצרה + מצרפים את הקטעים כרפרנס.
     // בהמשך נחליף את זה ל-LLM שמנסח.
