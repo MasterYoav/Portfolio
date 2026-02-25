@@ -68,24 +68,29 @@ export default function ChatShell({ open, theme, onClose }: Props) {
     setLoading(true);
 
     try {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 30_000);
+
       const r = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ message: q, topK: 6 }),
+        signal: controller.signal,
       });
+
+      clearTimeout(t);
 
       const json = await r.json().catch(() => null);
 
       if (!r.ok) {
         const errMsg =
-          json?.error || `Request failed (${r.status}). Check /api/chat logs.`;
+          json?.error ||
+          `Request failed (${r.status}). Check Vercel → Functions logs.`;
         setMsgs((m) => [...m, { role: "assistant", text: `Error: ${errMsg}` }]);
         return;
       }
 
-      const answerRaw = typeof json?.answer === "string" ? json.answer : "";
-      const answer = stripThink(answerRaw);
-
+      const answer = typeof json?.answer === "string" ? json.answer : "";
       const sources = Array.isArray(json?.sources)
         ? (json.sources as Source[])
         : [];
@@ -94,12 +99,19 @@ export default function ChatShell({ open, theme, onClose }: Props) {
         ...m,
         {
           role: "assistant",
-          text: answer || "I couldn’t generate an answer (empty response).",
+          text: stripThink(
+            answer || "I couldn’t generate an answer (empty response).",
+          ),
           sources,
         },
       ]);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Unknown error";
+      const msg =
+        e instanceof DOMException && e.name === "AbortError"
+          ? "Request timed out."
+          : e instanceof Error
+            ? e.message
+            : "Unknown error";
       setMsgs((m) => [...m, { role: "assistant", text: `Error: ${msg}` }]);
     } finally {
       setLoading(false);
@@ -126,7 +138,7 @@ export default function ChatShell({ open, theme, onClose }: Props) {
             aria-hidden
           />
 
-          {/* Panel (slides from bottom) */}
+          {/* Panel */}
           <motion.div
             className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-4xl"
             initial={{ y: 40, opacity: 0 }}
@@ -192,17 +204,19 @@ export default function ChatShell({ open, theme, onClose }: Props) {
                       >
                         <div className="max-w-[80%]">
                           <div
-                            className={`rounded-2xl px-4 py-3 text-sm ${isUser ? "rounded-br-md" : "rounded-bl-md"}`}
+                            className={`rounded-2xl px-4 py-3 text-sm ${
+                              isUser ? "rounded-br-md" : "rounded-bl-md"
+                            }`}
                             style={{
                               background: bubbleBg,
                               border: `1px solid rgba(var(--border))`,
                               color: "rgb(var(--fg))",
+                              whiteSpace: "pre-wrap",
                             }}
                           >
                             {m.text}
                           </div>
 
-                          {/* Sources (only for assistant msgs) */}
                           {"sources" in m &&
                             m.sources &&
                             m.sources.length > 0 && (
