@@ -13,7 +13,18 @@ type MatchRow = {
   content: string;
   similarity: number | null;
 };
+function sanitizeModelOutput(s: string) {
+  let out = String(s || "");
 
+  // remove common reasoning containers
+  out = out.replace(/<think>[\s\S]*?<\/think>\s*/gi, "");
+  out = out.replace(/<analysis>[\s\S]*?<\/analysis>\s*/gi, "");
+
+  // sometimes models output "Reasoning:" / "Thoughts:" blocks
+  out = out.replace(/^(reasoning|thoughts|analysis)\s*:\s*[\s\S]*?\n\n/gi, "");
+
+  return out.trim();
+}
 function stripThink(s: string) {
   return s.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
 }
@@ -142,8 +153,9 @@ export async function POST(req: Request) {
       "Answer ONLY using the provided CONTEXT.",
       "If the CONTEXT does not contain the answer, say you don't have enough information in the portfolio knowledge base.",
       "Do NOT guess. Do NOT use external knowledge.",
-      "Be concise and correct.",
-      "Never output <think> blocks.",
+      "IMPORTANT: Do NOT reveal chain-of-thought, reasoning, or internal steps.",
+      "Return ONLY the final answer to the user (no analysis, no scratchpad).",
+      "Never output tags like <think> or <analysis>.",
     ].join(" ");
 
     // ---- 4) HF CHAT ----
@@ -207,8 +219,7 @@ export async function POST(req: Request) {
 
     stage = "hf_extract_answer";
     const answerRaw = json?.choices?.[0]?.message?.content ?? "";
-    const answer = stripThink(String(answerRaw || "")).trim();
-
+    const answer = sanitizeModelOutput(answerRaw);
     return NextResponse.json({
       answer: answer || "No answer returned by model.",
       sources,
