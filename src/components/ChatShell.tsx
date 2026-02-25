@@ -20,6 +20,10 @@ type Msg =
   | { role: "user"; text: string }
   | { role: "assistant"; text: string; sources?: Source[] };
 
+function stripThink(s: string) {
+  return s.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
+}
+
 export default function ChatShell({ open, theme, onClose }: Props) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -64,23 +68,24 @@ export default function ChatShell({ open, theme, onClose }: Props) {
     setLoading(true);
 
     try {
-      const r = await fetch("/api/rag/answer", {
+      const r = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ question: q, match_count: 6 }),
+        body: JSON.stringify({ message: q, topK: 6 }),
       });
 
       const json = await r.json().catch(() => null);
 
       if (!r.ok) {
         const errMsg =
-          json?.error ||
-          `Request failed (${r.status}). Check /api/rag/answer logs.`;
+          json?.error || `Request failed (${r.status}). Check /api/chat logs.`;
         setMsgs((m) => [...m, { role: "assistant", text: `Error: ${errMsg}` }]);
         return;
       }
 
-      const answer = typeof json?.answer === "string" ? json.answer : "";
+      const answerRaw = typeof json?.answer === "string" ? json.answer : "";
+      const answer = stripThink(answerRaw);
+
       const sources = Array.isArray(json?.sources)
         ? (json.sources as Source[])
         : [];
