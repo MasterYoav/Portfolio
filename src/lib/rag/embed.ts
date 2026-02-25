@@ -1,7 +1,9 @@
 // src/lib/rag/embed.ts
-// Server-side embedding helper.
-// Uses Hugging Face Inference "feature-extraction" endpoint (stable).
-// Returns a single 384-dim vector.
+// Server-side embedding helper (production-safe on Vercel).
+// Uses Hugging Face Inference Router (HF Inference provider) feature-extraction endpoint.
+//
+// Endpoint shape (per HF docs/community):
+// https://router.huggingface.co/hf-inference/models/<MODEL>/pipeline/feature-extraction
 
 function mustEnv(name: string) {
   const v = process.env[name];
@@ -33,10 +35,10 @@ export async function embedText(text: string): Promise<number[]> {
   const hfToken = mustEnv("HF_TOKEN");
   const model = mustEnv("HF_EMBED_MODEL");
 
-  // HF feature-extraction endpoint
-  const url = `https://api-inference.huggingface.co/pipeline/feature-extraction/${encodeURIComponent(
+  // ✅ Router endpoint (HF Inference provider)
+  const url = `https://router.huggingface.co/hf-inference/models/${encodeURIComponent(
     model,
-  )}`;
+  )}/pipeline/feature-extraction`;
 
   const r = await fetch(url, {
     method: "POST",
@@ -44,8 +46,9 @@ export async function embedText(text: string): Promise<number[]> {
       Authorization: `Bearer ${hfToken}`,
       "Content-Type": "application/json",
     },
+    // Router expects `inputs` (string or array). Using array is safest.
     body: JSON.stringify({
-      inputs: t,
+      inputs: [t],
       options: { wait_for_model: true },
     }),
   });
@@ -62,27 +65,37 @@ export async function embedText(text: string): Promise<number[]> {
     throw new Error(`HF embeddings returned non-JSON: ${raw.slice(0, 200)}`);
   }
 
-  // Possible shapes:
-  // 1) number[]  (already pooled)
-  // 2) number[][] (token vectors) -> mean pool
-  // 3) number[][][] (batch) -> take first then pool
+  // Common shapes from feature-extraction:
+  // A) number[][][]  -> batch (len=1) of token vectors
+  // B) number[][]    -> token vectors
+  // C) number[]      -> already pooled
   let vec: number[] | null = null;
 
-  if (Array.isArray(json) && typeof json[0] === "number") {
-    vec = json as number[];
-  } else if (
+  // A) batch -> take first
+  if (
+    Array.isArray(json) &&
+    Array.isArray(json[0]) &&
+    Array.isArray(json[0][0])
+  ) {
+    const first = json[0];
+    if (Array.isArray(first) && typeof first[0]?.[0] === "number") {
+      vec = meanPool(first as number[][]);
+    }
+  }
+
+  // B) token vectors
+  if (
+    !vec &&
     Array.isArray(json) &&
     Array.isArray(json[0]) &&
     typeof json[0][0] === "number"
   ) {
     vec = meanPool(json as number[][]);
-  } else if (
-    Array.isArray(json) &&
-    Array.isArray(json[0]) &&
-    Array.isArray(json[0][0]) &&
-    typeof json[0][0][0] === "number"
-  ) {
-    vec = meanPool((json[0] as number[][]) ?? []);
+  }
+
+  // C) already pooled vector
+  if (!vec && Array.isArray(json) && typeof json[0] === "number") {
+    vec = json as number[];
   }
 
   if (!vec) {
@@ -91,7 +104,7 @@ export async function embedText(text: string): Promise<number[]> {
 
   vec = l2Normalize(vec);
 
-  // Your DB expects 384
+  // Your DB / match_chunks expects 384
   if (vec.length !== 384) {
     throw new Error(
       `Embedding dims ${vec.length}, expected 384 (model=${model})`,
