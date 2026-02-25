@@ -1,7 +1,7 @@
 // src/app/api/chat/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { embedText } from "@/lib/rag/embed"; // חייב להחזיר number[384]
+import { embedText } from "@/lib/rag/embed";
 
 export const runtime = "nodejs";
 
@@ -24,28 +24,55 @@ function mustEnv(name: string) {
   return v.trim();
 }
 
+function errDetails(e: unknown) {
+  const anyE = e as any;
+  return {
+    name: anyE?.name,
+    message: anyE?.message ?? String(e),
+    stack: anyE?.stack,
+    cause: anyE?.cause
+      ? {
+          name: anyE.cause?.name,
+          message: anyE.cause?.message ?? String(anyE.cause),
+          stack: anyE.cause?.stack,
+        }
+      : null,
+  };
+}
+
 export async function POST(req: Request) {
+  let stage = "start";
+
   try {
+    stage = "parse_json";
     const { message, topK }: ChatReq = await req.json();
 
     const q = (message ?? "").trim();
     if (!q)
       return NextResponse.json({ error: "Missing message" }, { status: 400 });
 
-    // ---- 1) Embed (384) ----
+    // ---- 1) EMBED ----
+    stage = "embedText";
     const qEmbedding = await embedText(q);
-    if (!Array.isArray(qEmbedding))
-      return NextResponse.json(
-        { error: "embedText did not return an array" },
-        { status: 500 },
-      );
-    if (qEmbedding.length !== 384)
-      return NextResponse.json(
-        { error: `embedText returned ${qEmbedding.length} dims, expected 384` },
-        { status: 500 },
-      );
 
-    // ---- 2) Retrieve from Supabase (server-only) ----
+    if (!Array.isArray(qEmbedding)) {
+      return NextResponse.json(
+        { error: "embedText did not return an array", stage },
+        { status: 500 },
+      );
+    }
+    if (qEmbedding.length !== 384) {
+      return NextResponse.json(
+        {
+          error: `embedText returned ${qEmbedding.length} dims, expected 384`,
+          stage,
+        },
+        { status: 500 },
+      );
+    }
+
+    // ---- 2) SUPABASE RPC ----
+    stage = "supabase_init";
     const supabase = createClient(
       mustEnv("SUPABASE_URL"),
       mustEnv("SUPABASE_SERVICE_ROLE_KEY"),
@@ -54,6 +81,7 @@ export async function POST(req: Request) {
 
     const k = Math.min(Math.max(topK ?? 6, 1), 12);
 
+    stage = "supabase_rpc_match_chunks";
     const { data, error } = await supabase.rpc("match_chunks", {
       query_embedding: qEmbedding,
       match_count: k,
@@ -61,7 +89,7 @@ export async function POST(req: Request) {
 
     if (error) {
       return NextResponse.json(
-        { error: `match_chunks failed: ${error.message}` },
+        { error: `match_chunks failed: ${error.message}`, stage },
         { status: 500 },
       );
     }
@@ -73,9 +101,10 @@ export async function POST(req: Request) {
         content: String(m.content ?? ""),
         similarity: typeof m.similarity === "number" ? m.similarity : null,
       }))
-      .filter((s: MatchRow) => s.content.trim().length > 0);
+      .filter((s) => s.content.trim().length > 0);
 
-    // ---- 3) Build prompt with context (RAG) ----
+    // ---- 3) PROMPT ----
+    stage = "build_prompt";
     const context = sources
       .slice(0, 6)
       .map((s, i) => `[#${i + 1} | sim ${s.similarity ?? "?"}]\n${s.content}`)
@@ -86,12 +115,13 @@ export async function POST(req: Request) {
       "Answer ONLY using the provided CONTEXT.",
       "If the context doesn't contain the answer, say you don't have enough information in the portfolio knowledge base.",
       "Be concise, correct, and avoid guessing.",
+      "Do NOT mention hidden chain-of-thought.",
     ].join(" ");
 
-    // ---- 4) Hugging Face Router (chat completions) ----
+    // ---- 4) HF CHAT ----
+    stage = "hf_env";
     const hfToken = mustEnv("HF_TOKEN");
-    const model = mustEnv("HF_CHAT_MODEL"); // לדוגמה: HuggingFaceTB/SmolLM3-3B
-
+    const model = mustEnv("HF_CHAT_MODEL");
     const url = "https://router.huggingface.co/v1/chat/completions";
 
     const payload = {
@@ -108,57 +138,47 @@ export async function POST(req: Request) {
       max_tokens: 350,
     };
 
-    let resp: Response;
-    try {
-      resp = await fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${hfToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      // זה המקום שהיום נותן לך "fetch failed" בלי פרטים — עכשיו תקבל פרטים.
-      return NextResponse.json(
-        {
-          error: "HF fetch threw",
-          details: { message: msg, url, model },
-        },
-        { status: 500 },
-      );
-    }
+    stage = "hf_fetch";
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${hfToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
+    stage = "hf_read_text";
     const raw = await resp.text();
+
     if (!resp.ok) {
       return NextResponse.json(
         {
           error: `HF chat failed (${resp.status})`,
-          details: { url, model, sample: raw.slice(0, 600) },
+          stage,
+          details: { model, sample: raw.slice(0, 700) },
         },
         { status: 500 },
       );
     }
 
-    let json: any = null;
+    stage = "hf_parse_json";
+    let json: any;
     try {
       json = JSON.parse(raw);
     } catch {
       return NextResponse.json(
         {
           error: "HF returned non-JSON",
-          details: { sample: raw.slice(0, 600) },
+          stage,
+          details: { sample: raw.slice(0, 700) },
         },
         { status: 500 },
       );
     }
 
-    const answerRaw =
-      json?.choices?.[0]?.message?.content ??
-      json?.choices?.[0]?.delta?.content ??
-      "";
-
+    stage = "hf_extract_answer";
+    const answerRaw = json?.choices?.[0]?.message?.content ?? "";
     const answer = stripThink(String(answerRaw || "")).trim();
 
     return NextResponse.json({
@@ -167,7 +187,10 @@ export async function POST(req: Request) {
       meta: { model, used_chunks: sources.length },
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    // פה נקבל סוף סוף את ה־cause האמיתי של "fetch failed"
+    return NextResponse.json(
+      { error: "Unhandled exception", stage, details: errDetails(e) },
+      { status: 500 },
+    );
   }
 }
