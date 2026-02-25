@@ -20,9 +20,9 @@ type Msg =
   | { role: "user"; text: string }
   | { role: "assistant"; text: string; sources?: Source[] };
 
-function stripThink(s: string) {
-  return s.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
-}
+type ChatApiResponse =
+  | { answer: string; sources?: Source[]; meta?: unknown }
+  | { error: string; stage?: string; details?: unknown };
 
 export default function ChatShell({ open, theme, onClose }: Props) {
   const [input, setInput] = useState("");
@@ -68,50 +68,43 @@ export default function ChatShell({ open, theme, onClose }: Props) {
     setLoading(true);
 
     try {
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), 30_000);
-
       const r = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ message: q, topK: 6 }),
-        signal: controller.signal,
       });
 
-      clearTimeout(t);
-
-      const json = await r.json().catch(() => null);
+      const json = (await r.json().catch(() => null)) as ChatApiResponse | null;
 
       if (!r.ok) {
         const errMsg =
-          json?.error ||
-          `Request failed (${r.status}). Check Vercel → Functions logs.`;
+          (json && "error" in json && json.error) ||
+          `Request failed (${r.status}).`;
         setMsgs((m) => [...m, { role: "assistant", text: `Error: ${errMsg}` }]);
         return;
       }
 
-      const answer = typeof json?.answer === "string" ? json.answer : "";
-      const sources = Array.isArray(json?.sources)
-        ? (json.sources as Source[])
-        : [];
+      if (!json || !("answer" in json)) {
+        setMsgs((m) => [
+          ...m,
+          { role: "assistant", text: "Error: Unexpected response shape." },
+        ]);
+        return;
+      }
+
+      const answer = typeof json.answer === "string" ? json.answer : "";
+      const sources = Array.isArray(json.sources) ? json.sources : [];
 
       setMsgs((m) => [
         ...m,
         {
           role: "assistant",
-          text: stripThink(
-            answer || "I couldn’t generate an answer (empty response).",
-          ),
+          text: answer || "I couldn’t generate an answer (empty response).",
           sources,
         },
       ]);
     } catch (e) {
-      const msg =
-        e instanceof DOMException && e.name === "AbortError"
-          ? "Request timed out."
-          : e instanceof Error
-            ? e.message
-            : "Unknown error";
+      const msg = e instanceof Error ? e.message : "Unknown error";
       setMsgs((m) => [...m, { role: "assistant", text: `Error: ${msg}` }]);
     } finally {
       setLoading(false);
@@ -204,9 +197,7 @@ export default function ChatShell({ open, theme, onClose }: Props) {
                       >
                         <div className="max-w-[80%]">
                           <div
-                            className={`rounded-2xl px-4 py-3 text-sm ${
-                              isUser ? "rounded-br-md" : "rounded-bl-md"
-                            }`}
+                            className={`rounded-2xl px-4 py-3 text-sm ${isUser ? "rounded-br-md" : "rounded-bl-md"}`}
                             style={{
                               background: bubbleBg,
                               border: `1px solid rgba(var(--border))`,
@@ -218,7 +209,7 @@ export default function ChatShell({ open, theme, onClose }: Props) {
                           </div>
 
                           {"sources" in m &&
-                            m.sources &&
+                            Array.isArray(m.sources) &&
                             m.sources.length > 0 && (
                               <div className="mt-2">
                                 <button
@@ -248,7 +239,7 @@ export default function ChatShell({ open, theme, onClose }: Props) {
                                   >
                                     {m.sources.map((s, idx) => (
                                       <div
-                                        key={s.id}
+                                        key={`${s.id}-${idx}`}
                                         className={
                                           idx ? "mt-3 pt-3 border-t" : ""
                                         }
