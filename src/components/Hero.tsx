@@ -187,7 +187,7 @@ export default function Hero() {
                 logos={[
                   { src: "logos/Python.png", alt: "Python" },
                   { src: "logos/Java.png", alt: "Java" },
-                  { src: "logos/C++.png", alt: "cpp" },
+                  { src: "logos/cpp.png", alt: "cpp" },
                   { src: "logos/Git.png", alt: "Git" },
                   { src: "logos/Jenkins.png", alt: "Jenkins" },
                   { src: "logos/docker.png", alt: "Docker" },
