@@ -48,8 +48,9 @@ export async function POST(req: Request) {
     const { message, topK }: ChatReq = await req.json();
 
     const q = (message ?? "").trim();
-    if (!q)
+    if (!q) {
       return NextResponse.json({ error: "Missing message" }, { status: 400 });
+    }
 
     // ---- 1) EMBED ----
     stage = "embedText";
@@ -71,7 +72,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // ---- 2) SUPABASE RPC ----
+    // ---- 2) SUPABASE ----
     stage = "supabase_init";
     const supabase = createClient(
       mustEnv("SUPABASE_URL"),
@@ -81,6 +82,7 @@ export async function POST(req: Request) {
 
     const k = Math.min(Math.max(topK ?? 6, 1), 12);
 
+    // 2a) primary: RPC match_chunks
     stage = "supabase_rpc_match_chunks";
     const { data, error } = await supabase.rpc("match_chunks", {
       query_embedding: qEmbedding,
@@ -88,13 +90,11 @@ export async function POST(req: Request) {
     });
 
     if (error) {
-      return NextResponse.json(
-        { error: `match_chunks failed: ${error.message}`, stage },
-        { status: 500 },
-      );
+      // לא מפילים פה מיד — ננסה fallback
+      stage = "supabase_rpc_match_chunks_failed_fallback";
     }
 
-    const sources: MatchRow[] = (Array.isArray(data) ? data : [])
+    let sources: MatchRow[] = (Array.isArray(data) ? data : [])
       .map((m: any) => ({
         id: String(m.id),
         document_id: m.document_id ?? null,
@@ -103,19 +103,47 @@ export async function POST(req: Request) {
       }))
       .filter((s) => s.content.trim().length > 0);
 
+    // 2b) fallback: אם RPC החזיר 0 (או נכשל), משוך chunks רגילים
+    // כדי שלא יהיה CONTEXT ריק בפרודקשן.
+    let usedFallback = false;
+
+    if (sources.length === 0) {
+      stage = "supabase_fallback_select_chunks";
+      const { data: fallbackData, error: fallbackErr } = await supabase
+        .from("chunks")
+        .select("id, document_id, content")
+        .limit(k);
+
+      if (!fallbackErr && Array.isArray(fallbackData)) {
+        usedFallback = true;
+        sources = fallbackData
+          .map((m: any) => ({
+            id: String(m.id),
+            document_id: m.document_id ?? null,
+            content: String(m.content ?? ""),
+            similarity: null,
+          }))
+          .filter((s) => s.content.trim().length > 0);
+      }
+    }
+
     // ---- 3) PROMPT ----
     stage = "build_prompt";
     const context = sources
       .slice(0, 6)
-      .map((s, i) => `[#${i + 1} | sim ${s.similarity ?? "?"}]\n${s.content}`)
+      .map(
+        (s, i) =>
+          `[#${i + 1}${s.similarity != null ? ` | sim ${s.similarity.toFixed(3)}` : ""}]\n${s.content}`,
+      )
       .join("\n\n---\n\n");
 
     const system = [
       "You are Yoav's portfolio assistant.",
       "Answer ONLY using the provided CONTEXT.",
-      "If the context doesn't contain the answer, say you don't have enough information in the portfolio knowledge base.",
-      "Be concise, correct, and avoid guessing.",
-      "Do NOT mention hidden chain-of-thought.",
+      "If the CONTEXT does not contain the answer, say you don't have enough information in the portfolio knowledge base.",
+      "Do NOT guess. Do NOT use external knowledge.",
+      "Be concise and correct.",
+      "Never output <think> blocks.",
     ].join(" ");
 
     // ---- 4) HF CHAT ----
@@ -184,10 +212,14 @@ export async function POST(req: Request) {
     return NextResponse.json({
       answer: answer || "No answer returned by model.",
       sources,
-      meta: { model, used_chunks: sources.length },
+      meta: {
+        model,
+        used_chunks: sources.length,
+        used_fallback: usedFallback,
+        rpc_error: (error?.message ?? null) as string | null,
+      },
     });
   } catch (e) {
-    // פה נקבל סוף סוף את ה־cause האמיתי של "fetch failed"
     return NextResponse.json(
       { error: "Unhandled exception", stage, details: errDetails(e) },
       { status: 500 },
