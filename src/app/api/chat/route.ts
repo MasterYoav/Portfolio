@@ -1,103 +1,62 @@
 // src/app/api/chat/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { embedText } from "@/lib/rag/embed";
+import { embedText } from "@/lib/rag/embed"; // חייב להחזיר number[384]
 
 export const runtime = "nodejs";
 
-type ChatReq = {
-  message: string;
-  topK?: number;
-};
+type ChatReq = { message: string; topK?: number };
 
 type MatchRow = {
   id: string;
-  document_id?: string;
-  content?: string;
-  similarity?: number | null;
+  document_id: string | null;
+  content: string;
+  similarity: number | null;
 };
 
 function stripThink(s: string) {
   return s.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
 }
 
-function buildContext(rows: MatchRow[]) {
-  // שומר קצר כדי לא לשרוף טוקנים
-  return rows
-    .slice(0, 6)
-    .map((r, i) => `[#${i + 1}] ${String(r.content ?? "").trim()}`)
-    .filter((x) => x.length > 0)
-    .join("\n\n");
-}
-
-async function hfChat(
-  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-) {
-  const token = process.env.HF_TOKEN;
-  const model = process.env.HF_CHAT_MODEL;
-
-  if (!token || !model) {
-    throw new Error("Missing HF_TOKEN or HF_CHAT_MODEL");
-  }
-
-  const res = await fetch("https://router.huggingface.co/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      stream: false,
-      temperature: 0.2,
-    }),
-  });
-
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`HF chat failed (${res.status}): ${txt.slice(0, 400)}`);
-  }
-
-  const data = (await res.json()) as any;
-  const content = data?.choices?.[0]?.message?.content;
-  if (typeof content !== "string") {
-    throw new Error("Unexpected HF response shape");
-  }
-  return stripThink(content);
+function mustEnv(name: string) {
+  const v = process.env[name];
+  if (!v || !v.trim()) throw new Error(`Missing env var: ${name}`);
+  return v.trim();
 }
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as ChatReq;
-    const message = (body.message ?? "").trim();
-    if (!message) {
+    const { message, topK }: ChatReq = await req.json();
+
+    const q = (message ?? "").trim();
+    if (!q)
       return NextResponse.json({ error: "Missing message" }, { status: 400 });
-    }
 
-    const topK = Math.min(Math.max(body.topK ?? 6, 1), 12);
-
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !serviceKey) {
+    // ---- 1) Embed (384) ----
+    const qEmbedding = await embedText(q);
+    if (!Array.isArray(qEmbedding))
       return NextResponse.json(
-        { error: "Missing Supabase env vars" },
+        { error: "embedText did not return an array" },
         { status: 500 },
       );
-    }
+    if (qEmbedding.length !== 384)
+      return NextResponse.json(
+        { error: `embedText returned ${qEmbedding.length} dims, expected 384` },
+        { status: 500 },
+      );
 
-    const supabase = createClient(supabaseUrl, serviceKey, {
-      auth: { persistSession: false },
-    });
+    // ---- 2) Retrieve from Supabase (server-only) ----
+    const supabase = createClient(
+      mustEnv("SUPABASE_URL"),
+      mustEnv("SUPABASE_SERVICE_ROLE_KEY"),
+      { auth: { persistSession: false } },
+    );
 
-    // 1) embed לשאלה
-    const qEmbedding = await embedText(message);
+    const k = Math.min(Math.max(topK ?? 6, 1), 12);
 
-    // 2) retrieve
     const { data, error } = await supabase.rpc("match_chunks", {
       query_embedding: qEmbedding,
-      match_count: topK,
+      match_count: k,
     });
 
     if (error) {
@@ -107,53 +66,108 @@ export async function POST(req: Request) {
       );
     }
 
-    const matches = (Array.isArray(data) ? data : []) as MatchRow[];
-    const sources = matches
-      .map((m) => ({
-        id: m.id,
-        document_id: m.document_id,
-        content: (m.content ?? "").trim(),
-        similarity: m.similarity ?? null,
+    const sources: MatchRow[] = (Array.isArray(data) ? data : [])
+      .map((m: any) => ({
+        id: String(m.id),
+        document_id: m.document_id ?? null,
+        content: String(m.content ?? ""),
+        similarity: typeof m.similarity === "number" ? m.similarity : null,
       }))
-      .filter((s) => s.content.length > 0);
+      .filter((s: MatchRow) => s.content.trim().length > 0);
 
-    // אם אין מקורות — לא מאפשרים הזיה
-    if (sources.length === 0) {
-      return NextResponse.json({
-        answer:
-          "לא מצאתי מידע רלוונטי במסמכים שלי כדי לענות. נסה לשאול משהו יותר ספציפי על פרויקטים/ניסיון/טכנולוגיות.",
-        sources: [],
+    // ---- 3) Build prompt with context (RAG) ----
+    const context = sources
+      .slice(0, 6)
+      .map((s, i) => `[#${i + 1} | sim ${s.similarity ?? "?"}]\n${s.content}`)
+      .join("\n\n---\n\n");
+
+    const system = [
+      "You are Yoav's portfolio assistant.",
+      "Answer ONLY using the provided CONTEXT.",
+      "If the context doesn't contain the answer, say you don't have enough information in the portfolio knowledge base.",
+      "Be concise, correct, and avoid guessing.",
+    ].join(" ");
+
+    // ---- 4) Hugging Face Router (chat completions) ----
+    const hfToken = mustEnv("HF_TOKEN");
+    const model = mustEnv("HF_CHAT_MODEL"); // לדוגמה: HuggingFaceTB/SmolLM3-3B
+
+    const url = "https://router.huggingface.co/v1/chat/completions";
+
+    const payload = {
+      model,
+      stream: false,
+      messages: [
+        { role: "system", content: system },
+        {
+          role: "user",
+          content: `CONTEXT:\n${context || "(empty)"}\n\nQUESTION:\n${q}`,
+        },
+      ],
+      temperature: 0.2,
+      max_tokens: 350,
+    };
+
+    let resp: Response;
+    try {
+      resp = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${hfToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      // זה המקום שהיום נותן לך "fetch failed" בלי פרטים — עכשיו תקבל פרטים.
+      return NextResponse.json(
+        {
+          error: "HF fetch threw",
+          details: { message: msg, url, model },
+        },
+        { status: 500 },
+      );
     }
 
-    const context = buildContext(sources);
+    const raw = await resp.text();
+    if (!resp.ok) {
+      return NextResponse.json(
+        {
+          error: `HF chat failed (${resp.status})`,
+          details: { url, model, sample: raw.slice(0, 600) },
+        },
+        { status: 500 },
+      );
+    }
 
-    // 3) מחייבים את המודל להשתמש בקונטקסט בלבד
-    const system = `
-אתה עוזר אישי עבור אתר פורטפוליו של Yoav.
-כללי ברזל:
-1) אתה עונה *רק* מתוך ה-Context שסופק לך.
-2) אם התשובה לא נמצאת ב-Context — תגיד: "אין לי מספיק מידע במסמכים שלי כדי לענות."
-3) אל תמציא עובדות. אל תשתמש בידע כללי.
-4) ענה בעברית בקצרה וברור.
-`;
+    let json: any = null;
+    try {
+      json = JSON.parse(raw);
+    } catch {
+      return NextResponse.json(
+        {
+          error: "HF returned non-JSON",
+          details: { sample: raw.slice(0, 600) },
+        },
+        { status: 500 },
+      );
+    }
 
-    const user = `
-Context:
-${context}
+    const answerRaw =
+      json?.choices?.[0]?.message?.content ??
+      json?.choices?.[0]?.delta?.content ??
+      "";
 
-Question:
-${message}
-`;
+    const answer = stripThink(String(answerRaw || "")).trim();
 
-    const answer = await hfChat([
-      { role: "system", content: system.trim() },
-      { role: "user", content: user.trim() },
-    ]);
-
-    return NextResponse.json({ answer, sources });
+    return NextResponse.json({
+      answer: answer || "No answer returned by model.",
+      sources,
+      meta: { model, used_chunks: sources.length },
+    });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Unknown error";
+    const msg = e instanceof Error ? e.message : String(e);
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
