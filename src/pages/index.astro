@@ -1,69 +1,18 @@
 ---
+import { projects } from '../lib/projects';
+
 const contacts = [
   { label: 'GitHub', href: 'https://github.com/masteryoav' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/yoav-peretz-320056376/' },
   { label: 'Email', href: 'mailto:realyoavperetz@gmail.com' },
 ];
 
-const apps = [
-  {
-    id: 'icesniff',
-    name: 'IceSniff',
-    category: 'Packet analysis',
-    platform: 'macOS · CLI · Web',
-    blurb: 'A modern packet analysis stack with native, browser, and terminal surfaces.',
-    icon: 'https://raw.githubusercontent.com/MasterYoav/IceSniff/main/docs/media/icon.png',
-    repoUrl: 'https://github.com/MasterYoav/IceSniff',
-    downloadUrl: 'https://github.com/MasterYoav/IceSniff/releases/latest',
-    readmeUrl: 'https://raw.githubusercontent.com/MasterYoav/IceSniff/main/README.md',
-    rawBaseUrl: 'https://raw.githubusercontent.com/MasterYoav/IceSniff/main/',
-    blobBaseUrl: 'https://github.com/MasterYoav/IceSniff/blob/main/',
-    accent: '#91e6ff',
-  },
-  {
-    id: 'dragon',
-    name: 'Dragon',
-    category: 'Desktop utility',
-    platform: 'macOS',
-    blurb: 'A notch and menu bar utility for staging files and running fast actions.',
-    icon:
-      'https://raw.githubusercontent.com/MasterYoav/Dragon/main/Dragon/Assets.xcassets/Dragon.appiconset/Dragon-macOS-Default-1024x1024@1x.png',
-    repoUrl: 'https://github.com/MasterYoav/Dragon',
-    downloadUrl: 'https://github.com/MasterYoav/Dragon/releases/latest',
-    readmeUrl: 'https://raw.githubusercontent.com/MasterYoav/Dragon/main/README.md',
-    rawBaseUrl: 'https://raw.githubusercontent.com/MasterYoav/Dragon/main/',
-    blobBaseUrl: 'https://github.com/MasterYoav/Dragon/blob/main/',
-    accent: '#f2b05f',
-  },
-  {
-    id: 'worklog',
-    name: 'WorkLog Mobile',
-    category: 'Team operations',
-    platform: 'iOS · Android',
-    blurb: 'A mobile work-tracking app for attendance, projects, and employer-worker flows.',
-    icon: 'https://raw.githubusercontent.com/MasterYoav/WorkLog/main/assets/images/icon.png',
-    repoUrl: 'https://github.com/MasterYoav/WorkLog',
-    downloadUrl: 'https://github.com/MasterYoav/WorkLog/archive/refs/heads/main.zip',
-    readmeUrl: 'https://raw.githubusercontent.com/MasterYoav/WorkLog/main/README.md',
-    rawBaseUrl: 'https://raw.githubusercontent.com/MasterYoav/WorkLog/main/',
-    blobBaseUrl: 'https://github.com/MasterYoav/WorkLog/blob/main/',
-    accent: '#79ef88',
-  },
-  {
-    id: 'hnefatafl',
-    name: 'Hnefatafl',
-    category: 'Strategy game',
-    platform: 'Desktop · Android',
-    blurb: 'A modern Norse strategy game with native installers and a Compose desktop build.',
-    icon: 'https://raw.githubusercontent.com/MasterYoav/Hnefatafl/main/assets/icon-1024.png',
-    repoUrl: 'https://github.com/MasterYoav/Hnefatafl',
-    downloadUrl: 'https://github.com/MasterYoav/Hnefatafl/releases/latest',
-    readmeUrl: 'https://raw.githubusercontent.com/MasterYoav/Hnefatafl/main/README.md',
-    rawBaseUrl: 'https://raw.githubusercontent.com/MasterYoav/Hnefatafl/main/',
-    blobBaseUrl: 'https://github.com/MasterYoav/Hnefatafl/blob/main/',
-    accent: '#c7b8ff',
-  },
-];
+const apps = projects.map((project) => ({
+  ...project,
+  platform: project.platforms.join(' · '),
+  blurb: project.summary,
+  downloadUrl: project.releaseUrl,
+}));
 
 ---
 
@@ -168,7 +117,7 @@ const apps = [
         <header class="dialog-header">
           <div class="dialog-app">
             <span class="dialog-icon-frame">
-              <img id="app-dialog-icon" src="" alt="" />
+              <img id="app-dialog-icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='24' fill='%23111111'/%3E%3Ctext x='48' y='61' fill='white' font-family='system-ui' font-size='30' font-weight='700' text-anchor='middle'%3EYP%3C/text%3E%3C/svg%3E" alt="" />
             </span>
 
             <div class="dialog-copy">
