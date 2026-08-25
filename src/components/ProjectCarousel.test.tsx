@@ -48,3 +48,17 @@ it('selects a project with its originating button', () => {
 
   expect(onSelect).toHaveBeenCalledWith(projects[0], button);
 });
+
+it('describes release pages and source links without calling them downloads', () => {
+  render(<ProjectCarousel projects={projects} onSelect={vi.fn()} />);
+
+  expect(screen.getByRole('link', { name: /view IceSniff releases/i })).toHaveProperty(
+    'href',
+    projects[0].releaseUrl,
+  );
+  expect(screen.getByRole('link', { name: /view WorkLog Mobile source/i })).toHaveProperty(
+    'href',
+    projects[2].repoUrl,
+  );
+  expect(screen.queryByRole('link', { name: /download/i })).toBeNull();
+});

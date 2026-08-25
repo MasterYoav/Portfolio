@@ -625,6 +625,11 @@ body:has(.project-sheet) [data-slot='dialog-overlay'] {
   backdrop-filter: blur(2.25rem) saturate(175%);
 }
 
+.project-sheet[data-open],
+.project-sheet[data-closed] {
+  animation: none;
+}
+
 .project-sheet > [data-slot='dialog-close'] {
   z-index: 2;
   top: 1rem;
@@ -645,6 +650,8 @@ body:has(.project-sheet) [data-slot='dialog-overlay'] {
 
 .project-sheet-handle {
   display: none;
+  touch-action: none;
+  user-select: none;
 }
 
 .project-sheet-header {
@@ -1057,14 +1064,29 @@ body:has(.project-sheet) [data-slot='dialog-overlay'] {
   .project-sheet-handle {
     position: absolute;
     z-index: 2;
-    top: 0.55rem;
+    top: 0;
     left: 50%;
     display: block;
+    width: 4.5rem;
+    height: 2.25rem;
+    cursor: grab;
+    transform: translateX(-50%);
+  }
+
+  .project-sheet-handle::before {
+    position: absolute;
+    top: 0.55rem;
+    left: 50%;
     width: 2.5rem;
     height: 0.3rem;
     border-radius: 999px;
     background: color-mix(in srgb, var(--foreground) 24%, transparent);
+    content: "";
     transform: translateX(-50%);
+  }
+
+  .project-sheet-handle:active {
+    cursor: grabbing;
   }
 
   .project-sheet > [data-slot='dialog-close'] {
@@ -1144,6 +1166,10 @@ body:has(.project-sheet) [data-slot='dialog-overlay'] {
     animation: none;
   }
 
+  .project-sheet {
+    transform: none !important;
+  }
+
   .project-card-main:active,
   .project-card-action:active,
   .project-carousel .project-carousel-control:active:not(:disabled) {
@@ -1159,14 +1185,68 @@ body:has(.project-sheet) [data-slot='dialog-overlay'] {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .material {
+  .material,
+  .project-card,
+  .project-card-art,
+  .project-card-main,
+  .appearance-control,
+  .appearance-control input:checked + span,
+  .secondary-action,
+  .project-card-action,
+  .project-carousel .project-carousel-control,
+  .project-sheet,
+  .project-sheet > [data-slot='dialog-close'],
+  .project-download-actions a,
+  .project-readme {
+    background: var(--card);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+
+  body:has(.project-sheet) [data-slot='dialog-overlay'] {
+    background: var(--background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .project-card::before,
+  .project-card-art img {
+    filter: none;
+  }
+
+  .project-card::before {
+    opacity: 0;
   }
 }
 
 @media (prefers-contrast: more) {
-  .material {
-    border-color: currentColor;
+  .material,
+  .project-card,
+  .project-card-art,
+  .project-card-main,
+  .appearance-control,
+  .appearance-control input:checked + span,
+  .secondary-action,
+  .project-card-action,
+  .project-carousel .project-carousel-control,
+  .project-sheet,
+  .project-sheet > [data-slot='dialog-close'],
+  .project-download-actions a,
+  .project-readme {
+    border: 2px solid currentColor;
+    background: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .primary-action,
+  body:has(.project-sheet) [data-slot='dialog-overlay'] {
+    border: 2px solid currentColor;
+  }
+
+  body:has(.project-sheet) [data-slot='dialog-overlay'] {
+    background: var(--background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

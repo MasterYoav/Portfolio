@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
-import { DownloadIcon, ExternalLinkIcon } from 'lucide-react';
+import { ExternalLinkIcon } from 'lucide-react';
 import { marked } from 'marked';
+import { animate } from 'motion';
 
 import type { Project } from '@/lib/projects';
 
@@ -27,6 +28,43 @@ type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 
 const installableAssetPattern = /\.(dmg|pkg|exe|msi|deb|appimage|rpm|flatpak|snap|run)$/i;
 const platformOrder: Platform[] = ['apple', 'windows', 'linux'];
+const releaseCache = new Map<string, Promise<Download[]>>();
+const readmeCache = new Map<string, Promise<string>>();
+const closeDistance = 112;
+const closeVelocity = 700;
+
+type DragState = {
+  pointerId: number;
+  startY: number;
+  lastY: number;
+  lastTime: number;
+  velocity: number;
+};
+
+function cachedRequest<T>(cache: Map<string, Promise<T>>, key: string, load: () => Promise<T>) {
+  const cached = cache.get(key);
+  if (cached) return cached;
+
+  const request = load();
+  cache.set(key, request);
+  void request.catch(() => cache.delete(key));
+  return request;
+}
+
+function projectOriginTransform(sheet: HTMLElement, trigger: HTMLElement | null) {
+  if (!trigger) return 'translate3d(0, 1rem, 0) scale(0.98)';
+
+  const source = trigger.getBoundingClientRect();
+  const target = sheet.getBoundingClientRect();
+  if (!source.width || !source.height || !target.width || !target.height) {
+    return 'translate3d(0, 1rem, 0) scale(0.98)';
+  }
+
+  const x = source.left + source.width / 2 - target.left - target.width / 2;
+  const y = source.top + source.height / 2 - target.top - target.height / 2;
+  const scale = Math.max(0.1, Math.min(1, source.width / target.width, source.height / target.height));
+  return `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+}
 
 function classifyPlatform(name: string): Platform {
   if (/\.(dmg|pkg)$/i.test(name)) return 'apple';
@@ -135,6 +173,11 @@ export function ProjectSheet({
   const [releaseState, setReleaseState] = useState<LoadState>('idle');
   const [readme, setReadme] = useState('');
   const [readmeState, setReadmeState] = useState<LoadState>('idle');
+  const sheetRef = useRef<HTMLDivElement | null>(null);
+  const openingAnimation = useRef<ReturnType<typeof animate> | null>(null);
+  const originTransform = useRef('translate3d(0, 1rem, 0) scale(0.98)');
+  const closing = useRef(false);
+  const drag = useRef<DragState | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -147,14 +190,17 @@ export function ProjectSheet({
 
     const repoPath = project.repoUrl ? repositoryPath(project.repoUrl) : '';
     if (repoPath) {
-      fetch(`https://api.github.com/repos/${repoPath}/releases?per_page=8`)
-        .then((response) => {
-          if (!response.ok) throw new Error('Release request failed');
-          return response.json();
-        })
-        .then((releases) => {
+      cachedRequest(releaseCache, repoPath, () => (
+        fetch(`https://api.github.com/repos/${repoPath}/releases?per_page=8`)
+          .then((response) => {
+            if (!response.ok) throw new Error('Release request failed');
+            return response.json();
+          })
+          .then(latestDownloads)
+      ))
+        .then((cachedDownloads) => {
           if (!active) return;
-          setDownloads(latestDownloads(releases));
+          setDownloads(cachedDownloads);
           setReleaseState('ready');
         })
         .catch(() => active && setReleaseState('error'));
@@ -163,11 +209,13 @@ export function ProjectSheet({
     }
 
     if (project.readmeUrl) {
-      fetch(project.readmeUrl)
-        .then((response) => {
-          if (!response.ok) throw new Error('README request failed');
-          return response.text();
-        })
+      cachedRequest(readmeCache, project.readmeUrl, () => (
+        fetch(project.readmeUrl!)
+          .then((response) => {
+            if (!response.ok) throw new Error('README request failed');
+            return response.text();
+          })
+      ))
         .then((markdown) => {
           if (!active) return;
           setReadme(renderReadme(markdown, project));
@@ -179,16 +227,120 @@ export function ProjectSheet({
     return () => { active = false; };
   }, [project]);
 
+  useLayoutEffect(() => {
+    const sheet = sheetRef.current;
+    if (!project || !sheet) return;
+
+    closing.current = false;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    originTransform.current = projectOriginTransform(sheet, trigger);
+    sheet.style.transformOrigin = 'center';
+    sheet.style.transform = reducedMotion ? 'none' : originTransform.current;
+    sheet.style.opacity = reducedMotion ? '0' : '0.35';
+    openingAnimation.current = animate(
+      sheet,
+      reducedMotion
+        ? { opacity: 1 }
+        : { transform: 'translate3d(0, 0, 0) scale(1)', opacity: 1 },
+      reducedMotion
+        ? { duration: 0.16, ease: 'easeOut' }
+        : { type: 'spring', stiffness: 380, damping: 39, mass: 1 },
+    );
+
+    return () => openingAnimation.current?.stop?.();
+  }, [project, trigger]);
+
+  const closeSheet = async (velocity = 0) => {
+    if (closing.current) return;
+    closing.current = true;
+    openingAnimation.current?.stop?.();
+
+    const sheet = sheetRef.current;
+    if (sheet) {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      await animate(
+        sheet,
+        reducedMotion
+          ? { opacity: 0 }
+          : { transform: originTransform.current, opacity: 0.2 },
+        reducedMotion
+          ? { duration: 0.12, ease: 'easeIn' }
+          : { type: 'spring', stiffness: 380, damping: 39, mass: 1, velocity },
+      );
+    }
+
+    onOpenChange(false);
+    window.setTimeout(() => trigger?.focus(), 0);
+  };
+
   const handleOpenChange = (open: boolean) => {
-    onOpenChange(open);
-    if (!open) window.setTimeout(() => trigger?.focus(), 0);
+    if (open) onOpenChange(true);
+    else void closeSheet();
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || closing.current) return;
+    openingAnimation.current?.stop?.();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    drag.current = {
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      lastY: event.clientY,
+      lastTime: event.timeStamp,
+      velocity: 0,
+    };
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+
+    event.preventDefault();
+    const elapsed = Math.max(1, event.timeStamp - current.lastTime);
+    current.velocity = ((event.clientY - current.lastY) / elapsed) * 1000;
+    current.lastY = event.clientY;
+    current.lastTime = event.timeStamp;
+    const distance = Math.max(0, event.clientY - current.startY);
+    const sheet = sheetRef.current;
+    if (!sheet) return;
+    sheet.style.transform = `translate3d(0, ${distance}px, 0)`;
+    sheet.style.opacity = String(Math.max(0.55, 1 - distance / window.innerHeight));
+  };
+
+  const handlePointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    drag.current = null;
+    const distance = Math.max(0, event.clientY - current.startY);
+    if (distance >= closeDistance || current.velocity >= closeVelocity) {
+      void closeSheet(Math.max(0, current.velocity));
+      return;
+    }
+
+    const sheet = sheetRef.current;
+    if (sheet) {
+      openingAnimation.current = animate(
+        sheet,
+        { transform: 'translate3d(0, 0, 0) scale(1)', opacity: 1 },
+        { type: 'spring', stiffness: 380, damping: 39, mass: 1 },
+      );
+    }
   };
 
   return (
     <Dialog open={project !== null} onOpenChange={handleOpenChange}>
       {project && (
-        <DialogContent className="project-sheet material">
-          <div className="project-sheet-handle" aria-hidden="true" />
+        <DialogContent ref={sheetRef} className="project-sheet material">
+          <div
+            className="project-sheet-handle"
+            aria-hidden="true"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerEnd}
+            onPointerCancel={handlePointerEnd}
+          />
           <div className="project-sheet-scroll">
             <DialogHeader className="project-sheet-header">
               <img className="project-sheet-icon" src={project.icon} alt="" />
@@ -231,7 +383,7 @@ export function ProjectSheet({
                     ))}
                     {project.releaseUrl && (
                       <a href={project.releaseUrl} target="_blank" rel="noreferrer">
-                        <DownloadIcon aria-hidden="true" /> Release page
+                        <ExternalLinkIcon aria-hidden="true" /> Release page
                       </a>
                     )}
                     {project.repoUrl && (

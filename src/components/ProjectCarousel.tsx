@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DownloadIcon, ExternalLinkIcon, PlayIcon } from 'lucide-react';
+import { ExternalLinkIcon, PlayIcon } from 'lucide-react';
 import type { CSSProperties } from 'react';
 
 import type { Project } from '../lib/projects';
@@ -22,11 +22,13 @@ export function ProjectCarousel({
     <Carousel opts={{ align: 'start' }} className="project-carousel" aria-label="Projects">
       <CarouselContent>
         {projects.map((project, index) => {
-          const actionUrl = project.gameUrl ?? project.releaseUrl ?? project.repoUrl;
+          const hasReleasePage = project.releaseUrl?.includes('/releases');
+          const actionUrl = project.gameUrl
+            ?? (hasReleasePage ? project.releaseUrl : project.repoUrl ?? project.releaseUrl);
           const actionLabel = project.gameUrl
             ? `Play ${project.name}`
-            : project.releaseUrl
-              ? `Download ${project.name}`
+            : hasReleasePage
+              ? `View ${project.name} releases`
               : `View ${project.name} source`;
 
           return (
@@ -69,8 +71,6 @@ export function ProjectCarousel({
                   >
                     {project.gameUrl ? (
                       <PlayIcon aria-hidden="true" />
-                    ) : project.releaseUrl ? (
-                      <DownloadIcon aria-hidden="true" />
                     ) : (
                       <ExternalLinkIcon aria-hidden="true" />
                     )}
