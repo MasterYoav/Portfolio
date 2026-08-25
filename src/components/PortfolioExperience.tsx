@@ -7,12 +7,15 @@ import type { Project } from '@/lib/projects';
 
 import { AppearanceControl } from './AppearanceControl';
 import { ProjectCarousel } from './ProjectCarousel';
+import { ProjectSheet } from './ProjectSheet';
 
 const appearanceKey = 'portfolio-appearance';
 
 export function PortfolioExperience({ projects }: { projects: Project[] }) {
   const [appearance, setAppearance] = useState<AppearancePreference>('system');
   const [appearanceReady, setAppearanceReady] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [projectTrigger, setProjectTrigger] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     let storedValue: string | null = null;
@@ -89,7 +92,13 @@ export function PortfolioExperience({ projects }: { projects: Project[] }) {
             <p className="eyebrow">Selected work</p>
             <h2 id="work-title">Useful products, shaped end to end.</h2>
           </div>
-          <ProjectCarousel projects={projects} onSelect={() => undefined} />
+          <ProjectCarousel
+            projects={projects}
+            onSelect={(project, trigger) => {
+              setProjectTrigger(trigger);
+              setSelectedProject(project);
+            }}
+          />
         </section>
 
         <section className="about-section page-section" id="about" aria-labelledby="about-title">
@@ -126,6 +135,14 @@ export function PortfolioExperience({ projects }: { projects: Project[] }) {
         <span>Yoav Peretz</span>
         <span>Built for the web, grounded in native craft.</span>
       </footer>
+
+      <ProjectSheet
+        project={selectedProject}
+        trigger={projectTrigger}
+        onOpenChange={(open) => {
+          if (!open) setSelectedProject(null);
+        }}
+      />
     </div>
   );
 }
