@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { AppearancePreference, ResolvedTheme } from '@/lib/appearance';
 import { readAppearancePreference, resolveTheme } from '@/lib/appearance';
 import type { Project } from '@/lib/projects';
 
 import { AppearanceControl } from './AppearanceControl';
+import { ProjectCarousel } from './ProjectCarousel';
 
 const appearanceKey = 'portfolio-appearance';
 
@@ -88,18 +89,7 @@ export function PortfolioExperience({ projects }: { projects: Project[] }) {
             <p className="eyebrow">Selected work</p>
             <h2 id="work-title">Useful products, shaped end to end.</h2>
           </div>
-          <ol className="project-index" aria-label="Projects">
-            {projects.map((project, index) => (
-              <li key={project.id} style={{ '--project-accent': project.accent } as CSSProperties}>
-                <span className="project-number">{String(index + 1).padStart(2, '0')}</span>
-                <span className="project-title-group">
-                  <span className="project-category">{project.category}</span>
-                  <strong>{project.name}</strong>
-                </span>
-                <span className="project-platforms">{project.platforms.join(' · ')}</span>
-              </li>
-            ))}
-          </ol>
+          <ProjectCarousel projects={projects} onSelect={() => undefined} />
         </section>
 
         <section className="about-section page-section" id="about" aria-labelledby="about-title">
