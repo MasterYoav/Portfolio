@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, createEvent, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { projects } from '@/lib/projects';
@@ -42,6 +42,11 @@ function projectWithRepository(name: string) {
     rawBaseUrl: `https://raw.githubusercontent.com/example/${name}/main/`,
     blobBaseUrl: `https://github.com/example/${name}/blob/main/`,
   };
+}
+
+function withTimeStamp<T extends Event>(event: T, timeStamp: number) {
+  Object.defineProperty(event, 'timeStamp', { value: timeStamp });
+  return event;
 }
 
 it('labels project details as a dialog and exposes a close action', () => {
@@ -199,9 +204,20 @@ it('closes from a deliberate handle drag without hijacking sheet scrolling', asy
   fireEvent.pointerUp(scrollArea, { clientY: 240, pointerId: 1 });
   expect(onOpenChange).not.toHaveBeenCalled();
 
-  fireEvent.pointerDown(handle, { button: 0, clientY: 100, pointerId: 2 });
-  fireEvent.pointerMove(handle, { clientY: 140, pointerId: 2 });
-  fireEvent.pointerUp(handle, { clientY: 140, pointerId: 2 });
+  fireEvent(handle, withTimeStamp(createEvent.pointerDown(handle, {
+    button: 0,
+    clientY: 100,
+    pointerId: 2,
+  }), 1000));
+  fireEvent(handle, withTimeStamp(createEvent.pointerMove(handle, {
+    clientY: 140,
+    pointerId: 2,
+  }), 1200));
+  fireEvent(handle, withTimeStamp(createEvent.pointerUp(handle, {
+    clientY: 140,
+    pointerId: 2,
+  }), 1210));
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
   expect(onOpenChange).not.toHaveBeenCalled();
 
   fireEvent.pointerDown(handle, { button: 0, clientY: 100, pointerId: 3 });
@@ -209,6 +225,46 @@ it('closes from a deliberate handle drag without hijacking sheet scrolling', asy
   fireEvent.pointerUp(handle, { clientY: 240, pointerId: 3 });
 
   await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+});
+
+it('does not dismiss from a stale early flick velocity', async () => {
+  const onOpenChange = vi.fn();
+  const { container } = render(
+    <ProjectSheet project={projects[0]} trigger={null} onOpenChange={onOpenChange} />,
+  );
+  const handle = container.ownerDocument.querySelector('.project-sheet-handle')!;
+
+  fireEvent(handle, withTimeStamp(createEvent.pointerDown(handle, {
+    button: 0,
+    clientY: 100,
+    pointerId: 4,
+  }), 1000));
+  fireEvent(handle, withTimeStamp(createEvent.pointerMove(handle, {
+    clientY: 120,
+    pointerId: 4,
+  }), 1010));
+  fireEvent(handle, withTimeStamp(createEvent.pointerUp(handle, {
+    clientY: 120,
+    pointerId: 4,
+  }), 2000));
+
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
+  expect(onOpenChange).not.toHaveBeenCalled();
+});
+
+it('springs back instead of dismissing when pointer capture is cancelled', async () => {
+  const onOpenChange = vi.fn();
+  const { container } = render(
+    <ProjectSheet project={projects[0]} trigger={null} onOpenChange={onOpenChange} />,
+  );
+  const handle = container.ownerDocument.querySelector('.project-sheet-handle')!;
+
+  fireEvent.pointerDown(handle, { button: 0, clientY: 100, pointerId: 5 });
+  fireEvent.pointerMove(handle, { clientY: 240, pointerId: 5 });
+  fireEvent.pointerCancel(handle, { clientY: 240, pointerId: 5 });
+
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
+  expect(onOpenChange).not.toHaveBeenCalled();
 });
 
 it('opens project details from the portfolio carousel', () => {

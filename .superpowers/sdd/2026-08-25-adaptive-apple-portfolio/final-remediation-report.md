@@ -34,3 +34,17 @@ The pre-existing unrelated `.astro/settings.json` modification and untracked `.c
 ## Concerns
 
 None known. The production route is covered by an actual isolated Astro build rather than a source-only assertion.
+
+## Gesture follow-up remediation
+
+A final re-review found that pointer-up reused the last pointer-move velocity indefinitely and that `pointercancel` shared the commit path. A quick early move followed by a long hold could therefore dismiss a short drag, and cancellation could dismiss instead of restoring the sheet.
+
+- Pointer-up now checks the age of the last velocity sample. Samples older than 100 ms are recomputed from the final pointer position and pointer-up timestamp, which reduces a held stationary gesture to zero release velocity while preserving fresh flick velocity.
+- Pointer-cancel now clears drag state and runs only the critically damped spring-back animation. It never enters the dismissal threshold path.
+- The existing low-speed sub-threshold assertion now uses explicit event timestamps and waits through the asynchronous close opportunity before asserting that no close occurred.
+- Added focused regressions for a 990 ms stale velocity sample and for cancellation after a drag beyond the distance threshold.
+- Red phase: after correcting the low-speed fixture timestamps, the focused ProjectSheet suite failed only the two new stale-velocity and pointer-cancel regressions.
+- Focused green phase: `npm test -- src/components/ProjectSheet.test.tsx` — 1 file, 11 tests passed.
+- Full suite: `npm test` — 6 files, 21 tests passed.
+- Production build: `npm run build` — 1 static page built successfully and tracked `dist/` output refreshed.
+- Whitespace validation: `git diff --check` completed with no output.

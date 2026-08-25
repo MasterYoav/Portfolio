@@ -32,6 +32,7 @@ const releaseCache = new Map<string, Promise<Download[]>>();
 const readmeCache = new Map<string, Promise<string>>();
 const closeDistance = 112;
 const closeVelocity = 700;
+const velocitySampleMaxAge = 100;
 
 type DragState = {
   pointerId: number;
@@ -307,18 +308,7 @@ export function ProjectSheet({
     sheet.style.opacity = String(Math.max(0.55, 1 - distance / window.innerHeight));
   };
 
-  const handlePointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
-    const current = drag.current;
-    if (!current || current.pointerId !== event.pointerId) return;
-
-    event.currentTarget.releasePointerCapture?.(event.pointerId);
-    drag.current = null;
-    const distance = Math.max(0, event.clientY - current.startY);
-    if (distance >= closeDistance || current.velocity >= closeVelocity) {
-      void closeSheet(Math.max(0, current.velocity));
-      return;
-    }
-
+  const resetSheetPosition = () => {
     const sheet = sheetRef.current;
     if (sheet) {
       openingAnimation.current = animate(
@@ -327,6 +317,34 @@ export function ProjectSheet({
         { type: 'spring', stiffness: 380, damping: 39, mass: 1 },
       );
     }
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    drag.current = null;
+    const distance = Math.max(0, event.clientY - current.startY);
+    const sampleAge = Math.max(0, event.timeStamp - current.lastTime);
+    const releaseVelocity = sampleAge > velocitySampleMaxAge
+      ? ((event.clientY - current.lastY) / Math.max(1, sampleAge)) * 1000
+      : current.velocity;
+    if (distance >= closeDistance || releaseVelocity >= closeVelocity) {
+      void closeSheet(Math.max(0, releaseVelocity));
+      return;
+    }
+
+    resetSheetPosition();
+  };
+
+  const handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    drag.current = null;
+    resetSheetPosition();
   };
 
   return (
@@ -338,8 +356,8 @@ export function ProjectSheet({
             aria-hidden="true"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerEnd}
-            onPointerCancel={handlePointerEnd}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
           />
           <div className="project-sheet-scroll">
             <DialogHeader className="project-sheet-header">
