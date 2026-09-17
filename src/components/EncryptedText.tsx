@@ -9,6 +9,9 @@ type EncryptedTextProps = {
   flipDelayMs?: number;
   encryptedClassName?: string;
   revealedClassName?: string;
+  /** A word inside `text` whose characters get `wordClassName`. */
+  word?: string;
+  wordClassName?: string;
 };
 
 const DEFAULT_CHARSET =
@@ -31,6 +34,8 @@ export function EncryptedText({
   flipDelayMs = 50,
   encryptedClassName,
   revealedClassName,
+  word,
+  wordClassName,
 }: EncryptedTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });
@@ -69,13 +74,20 @@ export function EncryptedText({
   }, [isInView, text, revealDelayMs, charset, flipDelayMs]);
 
   if (!text) return null;
+  const wordStart = word ? text.indexOf(word) : -1;
 
   return (
     <motion.span ref={ref} className={className} aria-label={text} role="text">
       {text.split('').map((character, index) => {
         const revealed = index < revealCount;
         return (
-          <span key={index} className={revealed ? revealedClassName : encryptedClassName} aria-hidden="true">
+          <span
+            key={index}
+            className={[revealed ? revealedClassName : encryptedClassName, wordStart >= 0 && index >= wordStart && index < wordStart + word!.length ? wordClassName : '']
+              .filter(Boolean)
+              .join(' ') || undefined}
+            aria-hidden="true"
+          >
             {revealed || character === ' ' ? character : scrambleCharacters.current[index]}
           </span>
         );
