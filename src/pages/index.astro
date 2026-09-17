@@ -1,37 +1,83 @@
 ---
-import { PortfolioExperience } from '@/components/PortfolioExperience';
-import { projects } from '@/lib/projects';
-import '@/styles/global.css';
+import Base from '@/layouts/Base.astro';
+import { EncryptedText } from '@/components/EncryptedText';
+import { ProjectDock } from '@/components/ProjectDock';
+import { site, links, projects } from '@/data/site';
+import { getPosts, formatDate, minutesToRead } from '@/lib/posts';
+
+const posts = await getPosts();
+const latest = posts.slice(0, 5);
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Yoav Peretz builds focused apps, utilities, and developer tools."
-    />
-    <title>Yoav Peretz</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="alternate icon" href="/favicon.ico" />
-    <script is:inline>
-      (() => {
-        let preference = 'system';
+<Base>
+  <section class="pt-16 pb-14 sm:pt-24 sm:pb-20">
+    <div class="rise flex items-center gap-3" style="--i:0">
+      <img src={site.avatar} alt="Yoav Peretz" width="44" height="44" class="size-11 rounded-full border border-border object-cover" />
+      <div class="leading-tight">
+        <p>{site.name}</p>
+        <p class="font-mono text-xs text-muted-foreground">developer · tool-maker</p>
+      </div>
+    </div>
 
-        try {
-          const stored = localStorage.getItem('portfolio-appearance');
-          if (stored === 'light' || stored === 'dark') preference = stored;
-        } catch {}
+    <h1 class="rise mt-10 text-[clamp(2.1rem,6vw,3.6rem)] leading-[1.08] tracking-[-0.02em]" style="--i:1">
+      <EncryptedText client:load text="I ship software you can download," revealDelayMs={22} flipDelayMs={40} />
+      <span class="text-muted-foreground"> then write down how it was made.</span>
+    </h1>
 
-        document.documentElement.dataset.theme = preference === 'system'
-          ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-          : preference;
-      })();
-    </script>
-  </head>
-  <body>
-    <PortfolioExperience client:load projects={projects} />
-  </body>
-</html>
+    <p class="rise mt-7 max-w-[60ch] text-lg text-muted-foreground" style="--i:2">
+      Native macOS utilities, cross-platform games, a packet analyzer with three front ends. This is where I keep the build notes,
+      the release stories, and the apps themselves.
+    </p>
+
+    <ul class="rise mt-8 flex flex-wrap gap-x-6 gap-y-2" style="--i:3">
+      {links.map((l) => (
+        <li>
+          <a href={l.href} class="ink-link group inline-flex items-center gap-1" target={l.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
+            {l.label}
+            <span aria-hidden="true" class="inline-block text-muted-foreground transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section aria-labelledby="writing" class="border-t border-border pt-10">
+    <div class="flex items-baseline justify-between">
+      <h2 id="writing" class="text-2xl">Latest writing</h2>
+      <a href="/posts" class="ink-link text-sm text-muted-foreground hover:text-foreground">All {posts.length} posts →</a>
+    </div>
+
+    <ol class="mt-6">
+      {latest.map((post, i) => (
+        <li class="rise" style={`--i:${i + 4}`}>
+          <a href={`/posts/${post.id}`} class="group -mx-3 grid gap-x-6 rounded-xl px-3 py-4 transition-colors hover:bg-card sm:grid-cols-[6.5rem_1fr]">
+            <time datetime={post.data.date.toISOString()} class="font-mono text-xs leading-7 text-muted-foreground">
+              {formatDate(post.data.date)}
+            </time>
+            <div>
+              <h3 class="text-xl leading-snug" transition:name={`post-title-${post.id}`}>
+                {post.data.title}
+              </h3>
+              <p class="mt-1.5 line-clamp-2 text-muted-foreground">{post.data.description}</p>
+              <p class="mt-2 flex items-center gap-3 font-mono text-xs text-muted-foreground">
+                <span>{minutesToRead(post)} min read</span>
+                <span class="text-signal opacity-0 transition-[opacity,transform] duration-300 -translate-x-1 group-hover:translate-x-0 group-hover:opacity-100" aria-hidden="true">read →</span>
+              </p>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section aria-labelledby="shipped" class="mt-14 border-t border-border pt-10">
+    <div class="flex items-baseline justify-between">
+      <h2 id="shipped" class="text-2xl">Things I've shipped</h2>
+      <a href="/projects" class="ink-link text-sm text-muted-foreground hover:text-foreground">All projects →</a>
+    </div>
+    <p class="mt-2 max-w-[55ch] text-muted-foreground">Each app opens its own page with downloads and the full README.</p>
+    <div class="mt-8">
+      <ProjectDock client:visible projects={projects.map(({ id, name, category, icon, accent }) => ({ id, name, category, icon, accent }))} />
+    </div>
+  </section>
+</Base>

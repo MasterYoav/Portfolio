@@ -1,0 +1,30 @@
+---
+import Base from '@/layouts/Base.astro';
+import { PostFilter } from '@/components/PostFilter';
+import { getPosts, minutesToRead } from '@/lib/posts';
+
+const posts = await getPosts();
+const tagCounts = new Map<string, number>();
+posts.flatMap((p) => p.data.tags).forEach((t) => tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1));
+const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([t]) => t);
+const summaries = posts.map((p) => ({
+  id: p.id,
+  title: p.data.title,
+  description: p.data.description,
+  date: p.data.date.toISOString(),
+  tags: p.data.tags,
+  minutes: minutesToRead(p),
+}));
+---
+
+<Base title="Writing" description="Build logs, release stories and notes on the apps I ship." backdrop>
+  <header class="pt-16 pb-8 sm:pt-20">
+    <h1 class="rise text-[clamp(2.2rem,6vw,3.4rem)] leading-tight">Writing</h1>
+    <p class="rise mt-3 max-w-[55ch] text-lg text-muted-foreground" style="--i:1">
+      Build logs and release stories. Pick a topic to narrow things down, or press <kbd class="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">/</kbd> to search.
+    </p>
+  </header>
+  <div class="rise" style="--i:2">
+    <PostFilter client:load posts={summaries} tags={tags} />
+  </div>
+</Base>

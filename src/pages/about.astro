@@ -1,0 +1,54 @@
+---
+import Base from '@/layouts/Base.astro';
+import { site, links, projects } from '@/data/site';
+
+const stack = [
+  { label: 'Languages', items: ['Swift', 'Kotlin', 'TypeScript', 'Rust', 'Python', 'C'] },
+  { label: 'Platforms', items: ['macOS', 'iOS', 'Android', 'Web', 'CLI'] },
+  { label: 'Tools', items: ['Xcode', 'SwiftUI', 'Compose', 'React', 'Astro', 'Supabase', 'Wireshark'] },
+];
+---
+
+<Base title="About" description="Who I am and what I build.">
+  <article class="pt-16 sm:pt-20">
+    <img src={site.avatar} alt="Portrait of Yoav Peretz" width="96" height="96" class="rise size-24 rounded-full border border-border object-cover" />
+    <h1 class="rise mt-8 text-[clamp(2.2rem,6vw,3.4rem)] leading-tight" style="--i:1">Developer. Tool-maker. Shipper.</h1>
+
+    <div class="prose rise mt-8" style="--i:2">
+      <p>
+        I'm Yoav. I build software that earns its place on your device: cross-platform utilities, mobile apps, games, and a packet
+        analysis stack. Each one is shipped, maintained, and held to a high standard of craft.
+      </p>
+      <p>
+        I care about how software <em>feels</em>, not just what it does. That usually means native UI where it matters, one shared core
+        where it doesn't, and a release pipeline that makes shipping boring.
+      </p>
+      <p>
+        So far that's {projects.length} projects across macOS, iOS, Android, desktop and the browser. The <a href="/posts">writing</a> covers
+        how each one came together.
+      </p>
+    </div>
+
+    <dl class="rise mt-12 grid gap-6 border-t border-border pt-8" style="--i:3">
+      {stack.map((group) => (
+        <div class="grid gap-2 sm:grid-cols-[8rem_1fr]">
+          <dt class="font-mono text-xs leading-7 text-muted-foreground">{group.label}</dt>
+          <dd class="flex flex-wrap gap-2">
+            {group.items.map((s) => <span class="rounded-full border border-border px-3 py-1 text-sm">{s}</span>)}
+          </dd>
+        </div>
+      ))}
+    </dl>
+
+    <section class="rise mt-16 border-t border-border pt-10" style="--i:4" aria-labelledby="contact">
+      <h2 id="contact" class="text-[clamp(1.8rem,4.5vw,2.6rem)] leading-tight">Let's build something.</h2>
+      <p class="mt-3 text-lg text-muted-foreground">Have a project in mind, or just want to talk code? My inbox is open.</p>
+      <a href={`mailto:${site.email}`} class="ink-link mt-6 inline-block text-xl">{site.email}</a>
+      <ul class="mt-4 flex gap-5 text-muted-foreground">
+        {links.filter((l) => l.label !== 'Email').map((l) => (
+          <li><a href={l.href} target="_blank" rel="noreferrer" class="ink-link hover:text-foreground">{l.label} ↗</a></li>
+        ))}
+      </ul>
+    </section>
+  </article>
+</Base>
