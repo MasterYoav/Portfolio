@@ -1,0 +1,505 @@
+<!DOCTYPE html><html lang="en" class="dark"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Watch and steer Claude Code sessions from the notch: live status, approvals as buttons, context and cost at a glance."><meta name="theme-color" content="#16171d"><meta property="og:title" content="Claude Notch · Yoav Peretz"><meta property="og:description" content="Watch and steer Claude Code sessions from the notch: live status, approvals as buttons, context and cost at a glance."><meta property="og:image" content="https://github.com/masteryoav.png?size=240"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Yoav Peretz" href="/rss.xml"><link rel="preload" href="/fonts/FacultyGlyphic-Regular.ttf" as="font" type="font/ttf" crossorigin><title>Claude Notch · Yoav Peretz</title><script>
+      const applyTheme = () => {
+        const light = localStorage.getItem('theme') === 'light';
+        document.documentElement.classList.toggle('dark', !light);
+      };
+      applyTheme();
+      document.addEventListener('astro:after-swap', applyTheme);
+    </script><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.D2-1vWZC.js"></script><link rel="stylesheet" href="/_astro/Base.DPyGptgR.css"><style>[data-astro-transition-scope="astro-zahcrohx-1"] { view-transition-name: project-icon-claude-notch; }@layer astro { ::view-transition-old(project-icon-claude-notch) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(project-icon-claude-notch) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(project-icon-claude-notch) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(project-icon-claude-notch) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-zahcrohx-1"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-zahcrohx-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-zahcrohx-1"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-zahcrohx-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-zahcrohx-1"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-zahcrohx-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-zahcrohx-1"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-zahcrohx-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-t56tzvi2-2"] { view-transition-name: post-title-claude-notch; }@layer astro { ::view-transition-old(post-title-claude-notch) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(post-title-claude-notch) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(post-title-claude-notch) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(post-title-claude-notch) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-t56tzvi2-2"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-t56tzvi2-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-t56tzvi2-2"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-t56tzvi2-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-t56tzvi2-2"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-t56tzvi2-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-t56tzvi2-2"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-t56tzvi2-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-lsotx7ay-3"] { view-transition-name: nav-underline; }@layer astro { ::view-transition-old(nav-underline) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(nav-underline) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(nav-underline) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(nav-underline) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-lsotx7ay-3"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-lsotx7ay-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-lsotx7ay-3"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-lsotx7ay-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-lsotx7ay-3"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-lsotx7ay-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-lsotx7ay-3"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-lsotx7ay-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style></head> <body class="min-h-dvh"> <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-foreground focus:px-3 focus:py-1.5 focus:text-background">Skip to content</a> <header class="sticky top-0 z-30 border-b border-transparent bg-background/80 backdrop-blur-md transition-colors duration-300 [&.is-stuck]:border-border" id="site-header"> <div class="mx-auto flex h-16 max-w-3xl items-center gap-4 px-5 sm:px-8"> <a href="/" class="group mr-auto flex items-center gap-2.5" aria-label="Yoav Peretz, home"> <span class="relative size-8 overflow-hidden rounded-full border border-border bg-white transition-transform duration-500 ease-(--ease-out-expo) group-hover:rotate-[-8deg] group-hover:scale-105"> <img src="/profile.png" alt="" width="32" height="32" class="size-full scale-125 object-cover"> </span> <span class="hidden text-[1.05rem] sm:inline">Yoav Peretz</span> </a> <nav aria-label="Primary" class="flex items-center gap-1 text-[0.95rem]"> <a href="/posts" class="relative rounded-md px-2.5 py-1 text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground"> Writing  </a><a href="/projects" aria-current="page" class="relative rounded-md px-2.5 py-1 text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground"> Projects <span class="absolute inset-x-2.5 -bottom-[1.1rem] h-px bg-signal" data-astro-transition-scope="astro-lsotx7ay-3"></span> </a><a href="/about" class="relative rounded-md px-2.5 py-1 text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground"> About  </a> </nav> <div class="flex items-center gap-1" data-astro-transition-persist="header-tools"> <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var l=(n,t)=>{let i=async()=>{await(await n())()},e=typeof t.value=="object"?t.value:void 0,s={timeout:e==null?void 0:e.timeout};"requestIdleCallback"in window?window.requestIdleCallback(i,s):setTimeout(i,s.timeout||200)};(self.Astro||(self.Astro={})).idle=l;window.dispatchEvent(new Event("astro:idle"));})();</script><script>(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>Number.POSITIVE_INFINITY*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="Z2KENV" prefix="r1" component-url="/_astro/CommandMenu.BOThs3eu.js" component-export="CommandMenu" renderer-url="/_astro/client.B7CjxCZE.js" props="{&quot;items&quot;:[1,[[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;Rebuilding this site as a notebook&quot;],&quot;href&quot;:[0,&quot;/posts/rebuilding-this-site&quot;],&quot;hint&quot;:[0,&quot;meta astro design&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;xBot: two weeks, 144 commits, and agents that finally get a computer&quot;],&quot;href&quot;:[0,&quot;/posts/xbot-ai-coworkers-on-a-mac&quot;],&quot;hint&quot;:[0,&quot;swift ai docker macos&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;SeaStar: a sea companion for iPhone and Apple Watch&quot;],&quot;href&quot;:[0,&quot;/posts/seastar-sea-companion&quot;],&quot;hint&quot;:[0,&quot;swift watchos ios design&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;Claude Notch: steering Claude Code from the notch&quot;],&quot;href&quot;:[0,&quot;/posts/claude-notch&quot;],&quot;hint&quot;:[0,&quot;swift macos ai claude-code&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;skillFight: which of your Claude skills wins?&quot;],&quot;href&quot;:[0,&quot;/posts/skillfight-skills-arena&quot;],&quot;hint&quot;:[0,&quot;typescript ai claude-code cli&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;Cluck Invaders: a space shooter in one HTML file&quot;],&quot;href&quot;:[0,&quot;/posts/cluck-invaders&quot;],&quot;hint&quot;:[0,&quot;games javascript canvas&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;Wolfence: a fence between your laptop and the remote&quot;],&quot;href&quot;:[0,&quot;/posts/wolfence-git-security-gate&quot;],&quot;hint&quot;:[0,&quot;rust security git&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;Dragon: a file shelf that lives in the notch&quot;],&quot;href&quot;:[0,&quot;/posts/dragon-a-shelf-in-the-notch&quot;],&quot;hint&quot;:[0,&quot;swift macos design&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;IceSniff: one engine, three front doors&quot;],&quot;href&quot;:[0,&quot;/posts/icesniff-one-engine-three-front-doors&quot;],&quot;hint&quot;:[0,&quot;rust swift networking ai&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;Hnefatafl: from first commit to installers overnight&quot;],&quot;href&quot;:[0,&quot;/posts/hnefatafl-overnight-release&quot;],&quot;hint&quot;:[0,&quot;kotlin games ci&quot;]}],[0,{&quot;group&quot;:[0,&quot;Writing&quot;],&quot;label&quot;:[0,&quot;WorkLog: attendance that survives a bad signal&quot;],&quot;href&quot;:[0,&quot;/posts/worklog-attendance-offline&quot;],&quot;hint&quot;:[0,&quot;react-native supabase mobile&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;xBot&quot;],&quot;href&quot;:[0,&quot;/projects/xbot&quot;],&quot;hint&quot;:[0,&quot;AI agents macOS&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;SeaStar&quot;],&quot;href&quot;:[0,&quot;/projects/seastar&quot;],&quot;hint&quot;:[0,&quot;Sea companion iPhone · Apple Watch&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;Claude Notch&quot;],&quot;href&quot;:[0,&quot;/projects/claude-notch&quot;],&quot;hint&quot;:[0,&quot;Developer utility macOS&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;skillFight&quot;],&quot;href&quot;:[0,&quot;/projects/skillfight&quot;],&quot;hint&quot;:[0,&quot;AI tooling Terminal · Web&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;Wolfence&quot;],&quot;href&quot;:[0,&quot;/projects/wolfence&quot;],&quot;hint&quot;:[0,&quot;Security CLI · macOS · Web&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;IceSniff&quot;],&quot;href&quot;:[0,&quot;/projects/icesniff&quot;],&quot;hint&quot;:[0,&quot;Packet analysis macOS · CLI · Web&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;Dragon&quot;],&quot;href&quot;:[0,&quot;/projects/dragon&quot;],&quot;hint&quot;:[0,&quot;Desktop utility macOS&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;WorkLog Mobile&quot;],&quot;href&quot;:[0,&quot;/projects/worklog&quot;],&quot;hint&quot;:[0,&quot;Team operations iOS · Android&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;Hnefatafl&quot;],&quot;href&quot;:[0,&quot;/projects/hnefatafl&quot;],&quot;hint&quot;:[0,&quot;Strategy game Desktop · Android&quot;]}],[0,{&quot;group&quot;:[0,&quot;Projects&quot;],&quot;label&quot;:[0,&quot;Cluck Invaders&quot;],&quot;href&quot;:[0,&quot;/projects/cluck-invaders&quot;],&quot;hint&quot;:[0,&quot;Browser game Browser&quot;]}],[0,{&quot;group&quot;:[0,&quot;Pages&quot;],&quot;label&quot;:[0,&quot;Home&quot;],&quot;href&quot;:[0,&quot;/&quot;],&quot;hint&quot;:[0,&quot;&quot;]}],[0,{&quot;group&quot;:[0,&quot;Pages&quot;],&quot;label&quot;:[0,&quot;Writing&quot;],&quot;href&quot;:[0,&quot;/posts&quot;],&quot;hint&quot;:[0,&quot;&quot;]}],[0,{&quot;group&quot;:[0,&quot;Pages&quot;],&quot;label&quot;:[0,&quot;Projects&quot;],&quot;href&quot;:[0,&quot;/projects&quot;],&quot;hint&quot;:[0,&quot;&quot;]}],[0,{&quot;group&quot;:[0,&quot;Pages&quot;],&quot;label&quot;:[0,&quot;About&quot;],&quot;href&quot;:[0,&quot;/about&quot;],&quot;hint&quot;:[0,&quot;&quot;]}],[0,{&quot;group&quot;:[0,&quot;Pages&quot;],&quot;label&quot;:[0,&quot;RSS feed&quot;],&quot;href&quot;:[0,&quot;/rss.xml&quot;],&quot;hint&quot;:[0,&quot;&quot;]}],[0,{&quot;group&quot;:[0,&quot;Elsewhere&quot;],&quot;label&quot;:[0,&quot;GitHub&quot;],&quot;href&quot;:[0,&quot;https://github.com/masteryoav&quot;],&quot;hint&quot;:[0,&quot;&quot;]}],[0,{&quot;group&quot;:[0,&quot;Elsewhere&quot;],&quot;label&quot;:[0,&quot;LinkedIn&quot;],&quot;href&quot;:[0,&quot;https://www.linkedin.com/in/yoav-peretz-320056376/&quot;],&quot;hint&quot;:[0,&quot;&quot;]}],[0,{&quot;group&quot;:[0,&quot;Elsewhere&quot;],&quot;label&quot;:[0,&quot;Email&quot;],&quot;href&quot;:[0,&quot;mailto:realyoavperetz@gmail.com&quot;],&quot;hint&quot;:[0,&quot;&quot;]}]]]}" ssr client="idle" opts="{&quot;name&quot;:&quot;CommandMenu&quot;,&quot;value&quot;:true}" await-children><button type="button" class="flex h-9 items-center gap-2 rounded-lg px-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Search posts, projects and links"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search size-4" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><span class="hidden items-center gap-0.5 md:flex [&amp;_kbd]:font-mono"><kbd data-slot="kbd" class="pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground select-none in-data-[slot=tooltip-content]:bg-background/20 in-data-[slot=tooltip-content]:text-background dark:in-data-[slot=tooltip-content]:bg-background/10 [&amp;_svg:not([class*=&#x27;size-&#x27;])]:size-3">⌘</kbd><kbd data-slot="kbd" class="pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground select-none in-data-[slot=tooltip-content]:bg-background/20 in-data-[slot=tooltip-content]:text-background dark:in-data-[slot=tooltip-content]:bg-background/10 [&amp;_svg:not([class*=&#x27;size-&#x27;])]:size-3">K</kbd></span></button><div data-slot="dialog-header" class="flex flex-col gap-2 sr-only"><h2 id="radix-_r1R_2H1_" data-slot="dialog-title" class="font-heading text-base leading-none font-medium">Search</h2><p id="radix-_r1R_2H2_" data-slot="dialog-description" class="text-sm text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground">Jump to a post, project or page</p></div><!--astro:end--></astro-island> <button type="button" id="theme-toggle" class="group grid size-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Toggle light and dark theme"> <svg viewBox="0 0 24 24" class="size-[18px] overflow-visible" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"> <!-- One glyph that morphs: a moon in dark mode, a sun with rays in light mode. --> <mask id="moon-cut"> <rect width="24" height="24" fill="white"></rect> <circle class="origin-center transition-transform duration-500 ease-(--ease-out-expo) [html:not(.dark)_&]:translate-x-[8px] [html:not(.dark)_&]:-translate-y-[8px]" cx="17" cy="7" r="6" fill="black"></circle> </mask> <circle class="origin-center transition-transform duration-500 ease-(--ease-out-expo) [html:not(.dark)_&]:scale-[0.6]" cx="12" cy="12" r="8" fill="currentColor" stroke="none" mask="url(#moon-cut)"></circle> <g class="origin-center transition-[opacity,transform] duration-500 ease-(--ease-out-expo) [html.dark_&]:scale-50 [html.dark_&]:rotate-45 [html.dark_&]:opacity-0"> <path d="M12 1.5v2M12 20.5v2M1.5 12h2M20.5 12h2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M4.6 19.4 6 18M18 6l1.4-1.4"></path> </g> </svg> </button> <script type="module">document.addEventListener("click",a=>{const i=a.target.closest("#theme-toggle");if(!i)return;const t=document.documentElement,o=t.classList.contains("dark"),c=()=>{t.classList.toggle("dark",!o),localStorage.setItem("theme",o?"light":"dark")},r=matchMedia("(prefers-reduced-motion: reduce)").matches;if(!document.startViewTransition||r)return c();const{left:d,top:l,width:h,height:m}=i.getBoundingClientRect(),e=d+h/2,n=l+m/2,u=Math.hypot(Math.max(e,innerWidth-e),Math.max(n,innerHeight-n));t.classList.add("theme-vt");const s=document.startViewTransition(c);s.ready.then(()=>t.animate({clipPath:[`circle(0 at ${e}px ${n}px)`,`circle(${u}px at ${e}px ${n}px)`]},{duration:650,easing:"cubic-bezier(0.16, 1, 0.3, 1)",pseudoElement:"::view-transition-new(root)"})),s.finished.finally(()=>t.classList.remove("theme-vt"))});</script> </div> </div> </header> <main id="main" class="mx-auto max-w-3xl px-5 pb-24 sm:px-8">  <article class="pt-14 sm:pt-20" style="--accent:#e8866a"> <a href="/projects" class="ink-link rise font-mono text-xs text-muted-foreground hover:text-foreground">← all projects</a> <header class="relative mt-8"> <div aria-hidden="true" class="pointer-events-none absolute -top-16 -left-16 size-72 rounded-full bg-(--accent) opacity-[0.1] blur-3xl"></div> <div class="relative flex flex-col gap-6 sm:flex-row sm:items-center"> <img src="/project-icons/claude-notch.png" alt="Claude Notch app icon" width="112" height="112" class="size-24 rounded-[22%] object-cover shadow-[0_18px_50px_-18px_var(--accent)] sm:size-28" data-astro-transition-scope="astro-zahcrohx-1"> <div> <p class="rise font-mono text-xs text-muted-foreground" style="--i:1">Developer utility · macOS</p> <h1 class="rise mt-2 text-[clamp(2.4rem,7vw,3.8rem)] leading-none" style="--i:1">Claude Notch</h1> </div> </div> <p class="rise relative mt-7 max-w-[58ch] text-xl leading-relaxed" style="--i:2">Watch and steer Claude Code sessions from the notch: live status, approvals as buttons, context and cost at a glance.</p> <div class="rise relative mt-8 flex flex-wrap items-center gap-2" style="--i:3">   <a class="group/button inline-flex shrink-0 items-center justify-center rounded-lg border bg-clip-padding font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&#38;_svg]:pointer-events-none [&#38;_svg]:shrink-0 [&#38;_svg:not([class*='size-'])]:size-4 border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 gap-1.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 h-10 px-4 text-[0.95rem]" href="https://github.com/MasterYoav/claude-notch" target="_blank" rel="noreferrer">Source on GitHub ↗</a> </div>  <ul class="rise relative mt-8 flex flex-wrap gap-2" style="--i:4" aria-label="Built with"> <li class="rounded-full border border-border px-3 py-1 font-mono text-xs text-muted-foreground">Swift</li><li class="rounded-full border border-border px-3 py-1 font-mono text-xs text-muted-foreground">AppKit</li><li class="rounded-full border border-border px-3 py-1 font-mono text-xs text-muted-foreground">Claude Code hooks</li> </ul> </header> <section class="mt-14 border-t border-border pt-8" aria-labelledby="notes"> <h2 id="notes" class="text-xl">The write-up</h2> <ul class="mt-3"> <li> <a href="/posts/claude-notch" class="group -mx-3 flex items-baseline justify-between gap-4 rounded-xl px-3 py-3 transition-colors hover:bg-card"> <span class="text-lg" data-astro-transition-scope="astro-t56tzvi2-2">Claude Notch: steering Claude Code from the notch</span> <span aria-hidden="true" class="text-muted-foreground transition-transform duration-300 group-hover:translate-x-1">→</span> </a> </li> </ul> </section>  <section class="mt-14 border-t border-border pt-8" aria-labelledby="readme"> <div class="flex items-baseline justify-between"> <h2 id="readme" class="text-xl">README</h2> <a href="https://github.com/MasterYoav/claude-notch#readme" target="_blank" rel="noreferrer" class="ink-link font-mono text-xs text-muted-foreground hover:text-foreground">view on GitHub ↗</a> </div> <div class="prose readme mt-6"><div align="center">
+<img loading="lazy" decoding="async" src="https://raw.githubusercontent.com/MasterYoav/claude-notch/HEAD/docs/icon.png" width="120" alt="Claude Notch">
+
+<h1>Claude Notch</h1>
+<p><strong>Watch and steer your Claude Code sessions from the notch.</strong></p>
+<p class="badges"><a target="_blank" rel="noreferrer" href="https://github.com/MasterYoav/claude-notch/actions/workflows/ci.yml"><img loading="lazy" decoding="async" src="https://github.com/MasterYoav/claude-notch/actions/workflows/ci.yml/badge.svg" alt="CI"></a></p>
+</div>
+
+<p>The notch glows while Claude works, turns red when it needs you, green when it&#39;s done, then retracts
+into the bezel. Press it to see what Claude is doing, stop it, send a follow-up, switch model or
+permission mode, or jump to another session.</p>
+<p>Anything Claude asks you mid-run — a permission decision, a <em>&quot;switch model?&quot;</em> confirmation, any
+choice — surfaces <strong>on the notch as buttons</strong>, so you never open a terminal just to answer it. While
+it works, the notch also shows how full the context window is, what it&#39;s costing, and whether it has
+delegated to a subagent.</p>
+<img loading="lazy" decoding="async" src="https://raw.githubusercontent.com/MasterYoav/claude-notch/HEAD/docs/compact.png" width="100%" alt="The notch glowing while Claude works">
+
+<p>Resting state: just the light around the cutout. Press it and it opens up.</p>
+<img loading="lazy" decoding="async" src="https://raw.githubusercontent.com/MasterYoav/claude-notch/HEAD/docs/working.png" width="100%" alt="Expanded, showing the current tool call and a stop button">
+
+<hr>
+<h2>Requirements</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>macOS</strong></td>
+<td>14 or newer</td>
+</tr>
+<tr>
+<td><strong>Claude Code</strong></td>
+<td>any recent version</td>
+</tr>
+<tr>
+<td><strong>Dependencies</strong></td>
+<td><strong>none</strong> — the app links only against frameworks that ship with macOS</td>
+</tr>
+<tr>
+<td><strong>Optional</strong></td>
+<td><a target="_blank" rel="noreferrer" href="#which-terminals-work"><code>tmux</code></a>, if your terminal is <em>not</em> iTerm2 or Terminal.app</td>
+</tr>
+</tbody></table>
+<p>Universal binary — Apple Silicon and Intel. Xcode is only needed to <em>build</em> it, never to run it.</p>
+<h2>Install</h2>
+<pre><code class="language-sh">curl -fsSL https://raw.githubusercontent.com/MasterYoav/claude-notch/main/install.sh | sh
+</code></pre>
+<p>That downloads the latest release, verifies its SHA-256, installs to <code>/Applications</code>, adds the hooks
+Claude Code needs, and launches. <a target="_blank" rel="noreferrer" href="https://github.com/MasterYoav/claude-notch/blob/HEAD/install.sh">Read the script first</a> — it&#39;s short and that&#39;s the
+point of one you can read.</p>
+<p>Then <strong>restart any Claude Code sessions that were already running</strong> — hooks are read at session
+start, so existing sessions won&#39;t report anything until they restart.</p>
+<details>
+<summary><b>What it changes on your machine</b></summary>
+
+<ul>
+<li><code>/Applications/ClaudeNotch.app</code> — the app.</li>
+<li><code>~/.claude/settings.json</code> — adds nine hooks. A timestamped backup is written first
+(<code>settings.json.notch-backup-&lt;time&gt;</code>), any hooks you already have are left alone, and
+<code>--uninstall-hooks</code> removes only ours.</li>
+<li><code>~/.claude/claude-notch/</code> — its own config and one small file per live session.</li>
+<li>Removes the download quarantine flag from the app (see below).</li>
+</ul>
+<p><code>CLAUDE_NOTCH_NO_HOOKS=1</code> installs the app without touching <code>settings.json</code>.</p>
+</details>
+
+<h3>⚠️ It isn&#39;t notarized</h3>
+<p>Notarizing requires a paid Apple developer account, so macOS refuses to open this app once it&#39;s been
+downloaded. There are three ways around that. They end in the same place and differ only in <strong>who
+you&#39;re trusting</strong>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Effort</th>
+<th>Gatekeeper</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>curl … | sh</code> above</td>
+<td>one command</td>
+<td>the script strips the quarantine flag — <strong>a bypass</strong></td>
+</tr>
+<tr>
+<td>Download + right-click → <strong>Open</strong></td>
+<td>four steps</td>
+<td>macOS&#39;s own &quot;I trust this&quot; path — <strong>no bypass</strong></td>
+</tr>
+<tr>
+<td>Build from source</td>
+<td>needs Xcode</td>
+<td>never involved — nothing is downloaded</td>
+</tr>
+</tbody></table>
+<p>If piping a script into your shell makes you uneasy, use the middle one: grab <code>ClaudeNotch.zip</code> from
+<a target="_blank" rel="noreferrer" href="https://github.com/MasterYoav/claude-notch/releases">Releases</a>, unzip it, drag it to
+<code>/Applications</code>, then <strong>right-click the app → Open</strong> and confirm once. macOS remembers. Then:</p>
+<pre><code class="language-sh">/Applications/ClaudeNotch.app/Contents/MacOS/ClaudeNotch --install-hooks
+</code></pre>
+<h3>Build from source</h3>
+<pre><code class="language-sh">git clone https://github.com/MasterYoav/claude-notch &amp;&amp; cd claude-notch
+./build.sh                                                    # → ClaudeNotch.app
+./ClaudeNotch.app/Contents/MacOS/ClaudeNotch --install-hooks
+open ClaudeNotch.app
+</code></pre>
+<p>Needs the Xcode command line tools (<code>xcode-select --install</code>). Nothing is downloaded, so Gatekeeper
+never enters into it.</p>
+<h3>Launching at login</h3>
+<p>System Settings → General → Login Items → <strong>+</strong> → <code>ClaudeNotch.app</code>.</p>
+<h3>Uninstalling</h3>
+<pre><code class="language-sh">/Applications/ClaudeNotch.app/Contents/MacOS/ClaudeNotch --uninstall-hooks
+rm -rf /Applications/ClaudeNotch.app ~/.claude/claude-notch
+</code></pre>
+<p>Right-click the notch to quit the app — it has no Dock icon or menu bar, so that&#39;s the way out.</p>
+<hr>
+<h2>What it does</h2>
+<p><strong>Glow states.</strong> Orange while Claude works, red when it&#39;s waiting on you, green when it finishes,
+then it retracts. The light drifts around the rim rather than sitting still.</p>
+<p><strong>The status line</strong> shows the current tool call — <em>Reading <code>foo.swift</code></em>, <em>Running <code>npm test</code></em>,
+<em>Searching …</em> — with a <strong>stop</strong> button that sends <code>SIGINT</code>, exactly what ⌃C does.</p>
+<p><strong>Answer any in-session choice from the notch.</strong> When Claude genuinely needs a permission decision
+(the <code>PermissionRequest</code> hook), the notch reddens and shows <strong>Approve / Deny</strong> — no opt-in, no
+guessing. And a slash-command confirmation like <em>&quot;Switch model to Sonnet?&quot;</em> fires <strong>no hook at all</strong>;
+the notch catches it by reading the terminal screen and offers the numbered options as buttons. The
+point is that every choice reaches the notch, so opening the session just to confirm something never
+makes sense.</p>
+<img loading="lazy" decoding="async" src="https://raw.githubusercontent.com/MasterYoav/claude-notch/HEAD/docs/approve.png" width="100%" alt="A held Bash call with Deny and Approve buttons">
+
+<p><strong>It opens itself</strong> when something needs you. A permission ask or a finish pops the notch out on its
+own — no hover — long enough to read and click, then it retracts. Turn on a <strong>sound</strong> for those
+moments in settings (off by default).</p>
+<p><strong>Context, cost and subagents, at a glance.</strong> While Claude works the status line carries a slim meter
+of how full the context window is (it climbs toward the auto-compaction the notch also announces),
+a badge when work has been <strong>delegated to a subagent</strong>, and — in the sessions drawer — a rough
+running <strong>cost</strong> for the session.</p>
+<p><strong>Approve or deny tool calls</strong> <em>before</em> Claude Code would even prompt — an opt-in gate for tools you
+name (see below).</p>
+<p><strong>Model, reasoning and permission mode</strong> for the live session, in one drawer:</p>
+<img loading="lazy" decoding="async" src="https://raw.githubusercontent.com/MasterYoav/claude-notch/HEAD/docs/model.png" width="100%" alt="Model picker with a reasoning slider and permission mode">
+
+<p><strong>Recent sessions</strong> — pick one to resume it in a new terminal window:</p>
+<img loading="lazy" decoding="async" src="https://raw.githubusercontent.com/MasterYoav/claude-notch/HEAD/docs/sessions.png" width="100%" alt="Recent sessions with project names and paths">
+
+<p><strong>Several sessions at once?</strong> The notch sticks to one until it goes quiet rather than flipping
+between them on every tool call, and names the project on the right so you always know what stop and
+send are aimed at. A session waiting on an approval jumps the queue. The sessions drawer lists <strong>every
+live session</strong> too, sorted by who needs you first — click one to bring its terminal forward, or
+approve/deny a sibling&#39;s held prompt inline without switching to it.</p>
+<hr>
+<h2>Which terminals work</h2>
+<p>Everything that <em>reads</em> Claude&#39;s state — the glow, the status line, stop, approvals — works
+everywhere, including Claude Code running inside the Claude desktop app.</p>
+<p>Everything that means <strong>typing at Claude</strong> needs a way into the terminal, and there is no universal
+one on macOS. The mechanism that would be (<code>TIOCSTI</code>, which injects into a tty regardless of
+emulator) is blocked by the kernel. So input goes through whatever each terminal chooses to expose —
+and most expose nothing.</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Send a message</th>
+<th>Permission mode</th>
+<th>Works in</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>tmux</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td><strong>any terminal</strong> — Ghostty, Warp, Zed, VS Code, Alacritty, kitty…</td>
+</tr>
+<tr>
+<td>iTerm2</td>
+<td>✅</td>
+<td>✅</td>
+<td>iTerm2</td>
+</tr>
+<tr>
+<td>Terminal.app</td>
+<td>✅</td>
+<td>❌</td>
+<td>Terminal.app</td>
+</tr>
+<tr>
+<td>—</td>
+<td>❌</td>
+<td>❌</td>
+<td>everything else</td>
+</tr>
+</tbody></table>
+<p><strong>If your terminal isn&#39;t iTerm2 or Terminal.app, run Claude Code inside tmux:</strong></p>
+<pre><code class="language-sh">brew install tmux
+tmux new -s work        # then run claude in here, from whatever terminal you like
+</code></pre>
+<p>tmux is worth it regardless — it&#39;s the only route that survives changing terminals, and it&#39;s the one
+that can deliver raw keys, which permission-mode switching needs. Terminal.app can&#39;t do that at all
+(<code>do script</code> always appends Return), so mode is disabled there.</p>
+<p><strong>In the Claude desktop app</strong> there&#39;s no tty and no local port, so nothing can type into it. What
+does work: while Claude is <em>still working</em>, a message you send is queued and handed over the moment
+it finishes. An already-idle desktop session can&#39;t be reached, and the notch says so rather than
+swallowing your message.</p>
+<hr>
+<h2>Model, reasoning, mode and sessions</h2>
+<p>The <strong>model</strong> pill opens a drawer with the models, a reasoning slider, and permission mode — one
+control, since all three describe the same session. They drive the live session by typing into its
+terminal, so they grey out when there&#39;s no way in.</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Model</td>
+<td><code>/model &lt;name&gt;</code></td>
+</tr>
+<tr>
+<td>Reasoning</td>
+<td><code>/effort &lt;level&gt;</code></td>
+</tr>
+<tr>
+<td>Permission mode</td>
+<td>Shift-Tab cycle</td>
+</tr>
+</tbody></table>
+<p>There is no <code>/permission-mode</code> command — Claude Code answers <em>&quot;Unknown command&quot;</em> — so mode rides the
+TUI&#39;s Shift-Tab cycle (<code>manual → accept edits → plan → auto</code>). Because it&#39;s a cycle, reaching a
+specific mode means stepping to it, which relies on knowing the current one; that comes from the
+hooks. It refuses to move from an unknown mode rather than risk landing you in <code>auto</code>.</p>
+<p>Model and reasoning also persist as your default for new sessions — that&#39;s Claude Code&#39;s behaviour,
+not something Claude Notch adds.</p>
+<p>The <strong>session</strong> pill lists recent sessions and resumes one via <code>claude --resume</code> in a new terminal
+window. It&#39;s labelled with the connected project&#39;s name.</p>
+<details>
+<summary><b>Which terminal resume opens</b></summary>
+
+<p>Opening a <code>.command</code> file plainly hands it to whatever macOS registered for shell scripts — usually
+Terminal.app — so living in iTerm2 or Ghostty got you a window you never asked for. Instead Claude
+Notch picks, in order:</p>
+<ol>
+<li>an explicit <code>--set-terminal</code> choice;</li>
+<li><strong>the terminal you ran <code>--install-hooks</code> from</strong>, captured at install time;</li>
+<li>any known terminal that&#39;s running;</li>
+<li>the system default.</li>
+</ol>
+<pre><code class="language-sh">ClaudeNotch --set-terminal              # show what it will use
+ClaudeNotch --set-terminal ghostty      # pin one
+ClaudeNotch --test-terminal             # open a window there to prove it
+</code></pre>
+<p>Known: iTerm2, Ghostty, Warp, WezTerm, kitty, Alacritty, Hyper, Terminal. Detection is limited to
+that list on purpose — it finds whatever launched the installer, and if that&#39;s an editor or a chat
+app, handing it a shell script is worse than falling back. Installing from inside tmux can&#39;t detect
+the terminal (the shell&#39;s parent is the tmux server), so <code>--set-terminal</code> is the answer there.</p>
+</details>
+
+<hr>
+<h2>Approving tool calls from the notch</h2>
+<p><strong>Off by default.</strong> Turn it on per-tool:</p>
+<pre><code class="language-sh">ClaudeNotch --enable-approvals Bash,Write,Edit
+ClaudeNotch --disable-approvals
+</code></pre>
+<p>A listed tool is held by the <code>PreToolUse</code> hook — the notch turns red, and pressing it reveals
+<strong>Approve / Deny</strong>. The hook process itself is the pause, so this works in the desktop app too.</p>
+<blockquote>
+<h3>⚠️ Read this before enabling</h3>
+<p><strong>The gate can&#39;t tell whether Claude Code would have prompted at all.</strong> That&#39;s decided <em>after</em>
+<code>PreToolUse</code> hooks return, so a listed tool is held unconditionally — including calls your
+allow-rules would have waved straight through, and sessions that prompt for nothing.</p>
+<p>In a session where everything is auto-approved, every listed call therefore stops and waits for a
+click you have no reason to make, with nothing on screen explaining the stall. That is not
+hypothetical: enabling it for <code>Bash</code> wedged a live session during development, which is why these
+guardrails exist:</p>
+<ul>
+<li>a <code>permission_mode</code> that never prompts (<code>bypassPermissions</code>, <code>dontAsk</code>, <code>plan</code>) is skipped, and
+so is an <strong>absent</strong> one;</li>
+<li>nothing is held unless the overlay is actually running;</li>
+<li><code>approvalTimeout</code> is a short <strong>20s</strong>, and a timeout returns <code>defer</code>, never <code>deny</code> — Claude Code
+then prompts exactly as it would without Claude Notch;</li>
+<li>after <strong>3</strong> unanswered holds the gate switches itself off.</li>
+</ul>
+<p>Keep the list short and prefer tools you genuinely get prompted for. If a session feels sluggish,
+<code>--disable-approvals</code> is the first thing to try.</p>
+</blockquote>
+<p>Settings live in <code>~/.claude/claude-notch/config.json</code>.</p>
+<hr>
+<h2>Troubleshooting</h2>
+<p><strong>The notch never lights up.</strong> Hooks are read at session start — restart your Claude Code session.
+Check they&#39;re installed with <code>grep ClaudeNotch ~/.claude/settings.json</code>, and that the app is running
+(it has no Dock icon; <code>pgrep -f ClaudeNotch</code>).</p>
+<p><strong>Stop does nothing.</strong> The session needs to have been started <em>after</em> the hooks were installed —
+that&#39;s when its process id is recorded. Restart it.</p>
+<p><strong>Send says &quot;that session has no terminal&quot;.</strong> It&#39;s a Claude desktop session, or one whose terminal
+isn&#39;t reachable. Run Claude Code in tmux — see <a target="_blank" rel="noreferrer" href="#which-terminals-work">Which terminals work</a>.</p>
+<p><strong>&quot;ClaudeNotch is damaged / can&#39;t be opened.&quot;</strong> The quarantine flag is still set. Either
+<code>xattr -dr com.apple.quarantine /Applications/ClaudeNotch.app</code>, or right-click the app → Open.</p>
+<p><strong>Everything feels slow after enabling approvals.</strong> That&#39;s the gate holding calls. Run
+<code>ClaudeNotch --disable-approvals</code>.</p>
+<p><strong>I can&#39;t quit it.</strong> Right-click the notch.</p>
+<hr>
+<h2>How it works</h2>
+<pre><code>claude ──hooks──► ClaudeNotch --hook &lt;Event&gt; ──► ~/.claude/claude-notch/&lt;session&gt;.json
+                                                          │ (directory watch)
+                     SIGINT / tmux / AppleScript ◄── app ──┘
+</code></pre>
+<p>Claude Code&#39;s hooks report what&#39;s happening; each writes one small JSON file per session, so
+concurrent sessions can&#39;t race each other. The app watches that directory.</p>
+<table>
+<thead>
+<tr>
+<th>Hook</th>
+<th>Notch</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SessionStart</code></td>
+<td>records the session&#39;s pid + tty</td>
+</tr>
+<tr>
+<td><code>UserPromptSubmit</code></td>
+<td>orange — <em>Thinking</em></td>
+</tr>
+<tr>
+<td><code>PreToolUse</code></td>
+<td>orange — the current tool call; also the opt-in approval gate; counts <code>Task</code> subagents</td>
+</tr>
+<tr>
+<td><code>PermissionRequest</code></td>
+<td>red — holds a real permission decision for <strong>Approve / Deny</strong></td>
+</tr>
+<tr>
+<td><code>Notification</code></td>
+<td>red for any choice (<code>permission_prompt</code>, <code>agent_needs_input</code>, …); <code>idle_prompt</code> goes quiet</td>
+</tr>
+<tr>
+<td><code>PreCompact</code></td>
+<td>orange — <em>Compacting</em></td>
+</tr>
+<tr>
+<td><code>SubagentStop</code></td>
+<td>drops the subagent count</td>
+</tr>
+<tr>
+<td><code>Stop</code></td>
+<td>green ✓, then retracts; also delivers a queued message</td>
+</tr>
+<tr>
+<td><code>SessionEnd</code></td>
+<td>clears the session</td>
+</tr>
+</tbody></table>
+<p>A slash-command confirmation (<code>/model</code> and friends) fires <strong>none</strong> of these — Claude Code draws it
+straight in the terminal — so the notch surfaces those by reading the screen (iTerm2 / tmux only),
+polling fast only just after it sends a command.</p>
+<h2>Development</h2>
+<pre><code class="language-sh">swift build
+./.build/debug/ClaudeNotch --self-test    # escaping, settings surgery, routes, session picking,
+                                          # TUI-menu parsing, usage + cost, subagent counting…
+</code></pre>
+<p>The self-test is the whole safety net — pure logic behind an assertion — and
+<a target="_blank" rel="noreferrer" href="https://github.com/MasterYoav/claude-notch/blob/HEAD/.github/workflows/ci.yml">CI</a> runs it on every push and PR (macOS runner; the app links AppKit).</p>
+<p>Point it at a throwaway config to avoid touching your own — both the app and the hook honour
+<code>CLAUDE_CONFIG_DIR</code>:</p>
+<pre><code class="language-sh">export CLAUDE_CONFIG_DIR=/tmp/fake-claude
+./ClaudeNotch.app/Contents/MacOS/ClaudeNotch &amp;
+echo &#39;{&quot;session_id&quot;:&quot;demo&quot;,&quot;tool_name&quot;:&quot;Read&quot;,&quot;tool_input&quot;:{&quot;file_path&quot;:&quot;/a/b.swift&quot;}}&#39; \
+  | ./ClaudeNotch.app/Contents/MacOS/ClaudeNotch --hook PreToolUse
+</code></pre>
+<p>The window and animation code can only really be judged on a physical bezel — <code>swift build</code> proves it
+compiles, not that it looks right.</p>
+<p>Releases: <code>./release.sh v0.1.2</code> builds universal, packs with <code>ditto</code>, checksums, and publishes.</p>
+<details>
+<summary><b>The app icon</b></summary>
+
+<p><code>ClaudeNotch.icon</code> is an Icon Composer document and has to be <strong>compiled</strong>, not copied. <code>build.sh</code>
+runs <code>actool</code> over it, emitting both a modern <code>Assets.car</code> and a legacy <code>.icns</code>. Two things actool is
+silently fussy about: the <code>.icon</code> must be passed <strong>directly</strong> (inside an <code>.xcassets</code> it compiles to
+an empty catalog), and <code>--minimum-deployment-target</code> must be <strong>26.0</strong> regardless of the app&#39;s own
+<code>LSMinimumSystemVersion</code> — below that it reports success and produces nothing.</p>
+</details>
+
+<h2>License</h2>
+<p><strong>AGPL-3.0.</strong> The notch overlay is derived from
+<a target="_blank" rel="noreferrer" href="https://github.com/Sentient-OS-Labs/sentient-os">Sentient OS</a> (AGPL-3.0), so Claude Notch inherits
+that license — see <a target="_blank" rel="noreferrer" href="https://github.com/MasterYoav/claude-notch/blob/HEAD/NOTICE">NOTICE</a> for exactly what came from where.</p>
+<p>Unofficial. Not affiliated with, or endorsed by, Anthropic.</p>
+</div> </section> </article>  </main> <footer class="border-t border-border"> <div class="mx-auto flex max-w-3xl flex-col gap-4 px-5 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8"> <p>© 2026 Yoav Peretz. Written and built by hand.</p> <ul class="flex flex-wrap gap-x-5 gap-y-2"> <li><a class="ink-link hover:text-foreground" href="https://github.com/masteryoav" target="_blank" rel="noreferrer">GitHub</a></li><li><a class="ink-link hover:text-foreground" href="https://www.linkedin.com/in/yoav-peretz-320056376/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a class="ink-link hover:text-foreground" href="mailto:realyoavperetz@gmail.com" rel="noreferrer">Email</a></li> <li><a class="ink-link hover:text-foreground" href="/rss.xml">RSS</a></li> </ul> </div> </footer> <script type="module">const e=()=>document.getElementById("site-header")?.classList.toggle("is-stuck",scrollY>8);addEventListener("scroll",e,{passive:!0});document.addEventListener("astro:page-load",e);</script> </body> </html>

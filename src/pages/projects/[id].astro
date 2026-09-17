@@ -30,7 +30,7 @@ const osGlyph: Record<string, string> = { macOS: '/download-icons/apple-logo.png
       <div class="relative flex flex-col gap-6 sm:flex-row sm:items-center">
         <img src={project.icon} alt={`${project.name} app icon`} width="112" height="112" class="size-24 rounded-[22%] object-cover shadow-[0_18px_50px_-18px_var(--accent)] sm:size-28" transition:name={`project-icon-${project.id}`} />
         <div>
-          <p class="rise font-mono text-xs text-muted-foreground" style="--i:1">{project.category} · {project.platform}</p>
+          <p class="rise font-mono text-xs text-muted-foreground" style="--i:1">{project.category} · {project.platform}{project.status && ` · ${project.status.toLowerCase()}`}</p>
           <h1 class="rise mt-2 text-[clamp(2.4rem,7vw,3.8rem)] leading-none" style="--i:1">{project.name}</h1>
         </div>
       </div>

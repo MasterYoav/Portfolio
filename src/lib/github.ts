@@ -42,8 +42,8 @@ export async function latestRelease(repo: string): Promise<Release | null> {
 
 /** README rendered to HTML with repo-relative links and images resolved. */
 export async function readmeHtml(repo: string): Promise<string | null> {
-  const raw = `https://raw.githubusercontent.com/${repo}/main/`;
-  const blob = `https://github.com/${repo}/blob/main/`;
+  const raw = `https://raw.githubusercontent.com/${repo}/HEAD/`;
+  const blob = `https://github.com/${repo}/blob/HEAD/`;
   try {
     const res = await fetch(`${raw}README.md`);
     if (!res.ok) return null;

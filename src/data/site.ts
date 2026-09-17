@@ -27,11 +27,70 @@ export type Project = {
   icon: string;
   accent: string;
   stack: string[];
+  status?: string; // shown when the project isn't released yet
   repo?: string; // owner/name on GitHub
   gameUrl?: string;
 };
 
+// Newest activity first.
 export const projects: Project[] = [
+  {
+    id: 'xbot',
+    name: 'xBot',
+    category: 'AI agents',
+    platform: 'macOS',
+    blurb: 'Your own AI coworkers on your own Mac: agents with their own computer, browser and files, running on a self-hosted OpenBot engine.',
+    icon: '/project-icons/xbot.png',
+    accent: '#9fe3ea',
+    stack: ['Swift', 'SwiftUI', 'TypeScript', 'Docker', 'Postgres'],
+    status: 'In development',
+    repo: 'MasterYoav/xBot',
+  },
+  {
+    id: 'seastar',
+    name: 'SeaStar',
+    category: 'Sea companion',
+    platform: 'iPhone · Apple Watch',
+    blurb: 'A free, native iPhone and Apple Watch companion for snorkelling, freediving and scuba, with offline logbooks and depth profiles.',
+    icon: '/project-icons/seastar.png',
+    accent: '#7fd6d0',
+    stack: ['Swift', 'SwiftUI', 'Swift Charts', 'HealthKit'],
+    status: 'In development',
+    repo: 'MasterYoav/SEASTAR',
+  },
+  {
+    id: 'claude-notch',
+    name: 'Claude Notch',
+    category: 'Developer utility',
+    platform: 'macOS',
+    blurb: 'Watch and steer Claude Code sessions from the notch: live status, approvals as buttons, context and cost at a glance.',
+    icon: '/project-icons/claude-notch.png',
+    accent: '#e8866a',
+    stack: ['Swift', 'AppKit', 'Claude Code hooks'],
+    repo: 'MasterYoav/claude-notch',
+  },
+  {
+    id: 'skillfight',
+    name: 'skillFight',
+    category: 'AI tooling',
+    platform: 'Terminal · Web',
+    blurb: 'Points at your Claude skills, finds the ones fighting over the same requests, and stages the verdict as an ASCII arena.',
+    icon: '/project-icons/skillfight.svg',
+    accent: '#d66bf0',
+    stack: ['TypeScript', 'React', 'Ink', 'Anthropic API'],
+    repo: 'MasterYoav/skillFight',
+  },
+  {
+    id: 'wolfence',
+    name: 'Wolfence',
+    category: 'Security',
+    platform: 'CLI · macOS · Web',
+    blurb: 'A security-first Git interface: wolf push scans outbound changes for secrets, vulnerabilities and risky config before they leave your machine.',
+    icon: '/project-icons/wolfence.png',
+    accent: '#8ea3c7',
+    stack: ['Rust', 'Swift', 'Astro'],
+    repo: 'MasterYoav/wolfence',
+  },
   {
     id: 'icesniff',
     name: 'IceSniff',

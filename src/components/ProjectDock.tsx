@@ -13,7 +13,7 @@ export function ProjectDock({ projects }: { projects: DockProject[] }) {
       <motion.ul
         onPointerMove={(e) => e.pointerType === 'mouse' && mouseX.set(e.clientX)}
         onPointerLeave={() => mouseX.set(Infinity)}
-        className="flex h-24 w-fit max-w-full items-end gap-3 rounded-2xl border border-border bg-card/60 px-3 pb-3"
+        className="flex h-24 w-fit max-w-full items-end gap-3 overflow-x-auto rounded-2xl border border-border bg-card/60 px-3 pb-3 [scrollbar-width:none]"
       >
         {projects.map((p) => (
           <DockIcon key={p.id} project={p} mouseX={mouseX} />
@@ -37,7 +37,7 @@ function DockIcon({ project, mouseX }: { project: DockProject; mouseX: MotionVal
   });
 
   return (
-    <li className="flex items-end">
+    <li className="flex shrink-0 items-end">
       <Tooltip>
         <TooltipTrigger asChild>
           <motion.a

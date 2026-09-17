@@ -19,7 +19,10 @@ import { projects } from '@/data/site';
           <img src={p.icon} alt="" width="72" height="72" loading="lazy" class="relative size-14 shrink-0 rounded-[22%] object-cover shadow-[0_10px_30px_-12px_var(--accent)] transition-transform duration-700 ease-(--ease-out-expo) group-hover:-translate-y-1 group-hover:-rotate-3 sm:size-[72px]" transition:name={`project-icon-${p.id}`} />
           <span class="relative min-w-0 flex-1">
             <span class="flex flex-wrap items-baseline justify-between gap-x-4">
-              <span class="text-2xl">{p.name}</span>
+              <span class="flex items-baseline gap-3">
+                <span class="text-2xl">{p.name}</span>
+                {p.status && <span class="rounded-full border border-border px-2 py-0.5 font-mono text-[0.7rem] text-muted-foreground">{p.status}</span>}
+              </span>
               <span class="font-mono text-xs text-muted-foreground">{p.platform}</span>
             </span>
             <span class="mt-1 block text-sm text-muted-foreground">{p.category}</span>
