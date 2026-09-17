@@ -290,3 +290,19 @@ html.theme-vt::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
+
+/* ── Writing pages: static gradient (pure CSS, no per-frame work) ────── */
+.blog-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 55% at 12% 8%, oklch(0.72 0.13 268 / var(--blog-glow)), transparent 70%),
+    radial-gradient(55% 60% at 92% 30%, oklch(0.73 0.12 325 / var(--blog-glow)), transparent 70%),
+    radial-gradient(70% 55% at 45% 100%, oklch(0.82 0.04 262 / var(--blog-glow)), transparent 70%),
+    var(--background);
+}
+:root { --blog-glow: 45%; }
+.dark { --blog-glow: 22%; }

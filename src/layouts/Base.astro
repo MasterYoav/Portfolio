@@ -5,12 +5,11 @@ import '@/styles/global.css';
 import { site, nav, links, projects } from '@/data/site';
 import { CommandMenu } from '@/components/CommandMenu';
 import ThemeToggle from '@/components/ThemeToggle.astro';
-import { BlogBackdrop } from '@/components/BlogBackdrop';
 
 interface Props {
   title?: string;
   description?: string;
-  /** Animated ShaderGradient background, used on the writing pages. */
+  /** Soft gradient background, used on the writing pages. */
   backdrop?: boolean;
 }
 
@@ -51,8 +50,7 @@ const searchItems = [
     </script>
     <ClientRouter />
   </head>
-  <body class="min-h-dvh">
-    {backdrop && <BlogBackdrop client:only="react" transition:persist="blog-backdrop" />}
+  <body class:list={["min-h-dvh", backdrop && "blog-bg"]}>
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-foreground focus:px-3 focus:py-1.5 focus:text-background">Skip to content</a>
 
     <header class="sticky top-0 z-30 border-b border-transparent bg-background/80 backdrop-blur-md transition-colors duration-300 [&.is-stuck]:border-border" id="site-header">
