@@ -1,0 +1,102 @@
+---
+import Base from '@/layouts/Base.astro';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { projects, type Project } from '@/data/site';
+import { latestRelease, readmeHtml } from '@/lib/github';
+import { getPosts, formatDate } from '@/lib/posts';
+
+export function getStaticPaths() {
+  return projects.map((project) => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props as { project: Project };
+const [release, readme, posts] = await Promise.all([
+  project.repo ? latestRelease(project.repo) : null,
+  project.repo ? readmeHtml(project.repo) : null,
+  getPosts(),
+]);
+const related = posts.filter((p) => p.data.project === project.id);
+const btn = (variant: 'default' | 'outline' = 'default') => cn(buttonVariants({ variant, size: 'lg' }), 'h-10 px-4 text-[0.95rem]');
+const osGlyph: Record<string, string> = { macOS: '/download-icons/apple-logo.png', Windows: '/download-icons/windows.png', Linux: '/download-icons/linux.png' };
+---
+
+<Base title={project.name} description={project.blurb}>
+  <article class="pt-14 sm:pt-20" style={`--accent:${project.accent}`}>
+    <a href="/projects" class="ink-link rise font-mono text-xs text-muted-foreground hover:text-foreground">← all projects</a>
+
+    <header class="relative mt-8">
+      <div aria-hidden="true" class="pointer-events-none absolute -top-16 -left-16 size-72 rounded-full bg-(--accent) opacity-[0.1] blur-3xl"></div>
+      <div class="relative flex flex-col gap-6 sm:flex-row sm:items-center">
+        <img src={project.icon} alt={`${project.name} app icon`} width="112" height="112" class="size-24 rounded-[22%] object-cover shadow-[0_18px_50px_-18px_var(--accent)] sm:size-28" transition:name={`project-icon-${project.id}`} />
+        <div>
+          <p class="rise font-mono text-xs text-muted-foreground" style="--i:1">{project.category} · {project.platform}</p>
+          <h1 class="rise mt-2 text-[clamp(2.4rem,7vw,3.8rem)] leading-none" style="--i:1">{project.name}</h1>
+        </div>
+      </div>
+      <p class="rise relative mt-7 max-w-[58ch] text-xl leading-relaxed" style="--i:2">{project.blurb}</p>
+
+      <div class="rise relative mt-8 flex flex-wrap items-center gap-2" style="--i:3">
+        {release?.downloads.map((d) => (
+          <a class={btn()} href={d.url} rel="noreferrer">
+              {osGlyph[d.os] && <img src={osGlyph[d.os]} alt="" width="16" height="16" class:list={["size-4 object-contain", d.os === "macOS" && "dark:invert"]} />}
+              Download for {d.os}
+            </a>
+        ))}
+        {project.gameUrl && (
+          <a class={btn()} href="#play">Play now ↓</a>
+        )}
+        {project.repo && (
+          <a class={btn('outline')} href={`https://github.com/${project.repo}`} target="_blank" rel="noreferrer">Source on GitHub ↗</a>
+        )}
+      </div>
+      {release && (
+        <p class="rise relative mt-3 font-mono text-xs text-muted-foreground" style="--i:3">
+          <a class="ink-link" href={release.url} target="_blank" rel="noreferrer">{release.tag}</a>, released {formatDate(new Date(release.date))}
+        </p>
+      )}
+
+      <ul class="rise relative mt-8 flex flex-wrap gap-2" style="--i:4" aria-label="Built with">
+        {project.stack.map((s) => <li class="rounded-full border border-border px-3 py-1 font-mono text-xs text-muted-foreground">{s}</li>)}
+      </ul>
+    </header>
+
+    {related.length > 0 && (
+      <section class="mt-14 border-t border-border pt-8" aria-labelledby="notes">
+        <h2 id="notes" class="text-xl">The write-up</h2>
+        <ul class="mt-3">
+          {related.map((p) => (
+            <li>
+              <a href={`/posts/${p.id}`} class="group -mx-3 flex items-baseline justify-between gap-4 rounded-xl px-3 py-3 transition-colors hover:bg-card">
+                <span class="text-lg" transition:name={`post-title-${p.id}`}>{p.data.title}</span>
+                <span aria-hidden="true" class="text-muted-foreground transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {project.gameUrl && (
+      <section id="play" class="mt-14 scroll-mt-24 border-t border-border pt-8" aria-labelledby="play-title">
+        <h2 id="play-title" class="text-xl">Play</h2>
+        <p class="mt-1 text-muted-foreground">Click the game to focus it, then use the keyboard.</p>
+        <iframe src={project.gameUrl} title={`${project.name}, playable`} loading="lazy" class="mt-5 aspect-[4/3] w-full rounded-2xl border border-border bg-black" allowfullscreen></iframe>
+      </section>
+    )}
+
+    {project.repo && (
+      <section class="mt-14 border-t border-border pt-8" aria-labelledby="readme">
+        <div class="flex items-baseline justify-between">
+          <h2 id="readme" class="text-xl">README</h2>
+          <a href={`https://github.com/${project.repo}#readme`} target="_blank" rel="noreferrer" class="ink-link font-mono text-xs text-muted-foreground hover:text-foreground">view on GitHub ↗</a>
+        </div>
+        {readme ? (
+          <div class="prose readme mt-6" set:html={readme} />
+        ) : (
+          <p class="mt-4 text-muted-foreground">The README couldn't be fetched when this page was built. It's always available on GitHub.</p>
+        )}
+      </section>
+    )}
+  </article>
+</Base>

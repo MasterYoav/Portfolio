@@ -1,0 +1,48 @@
+<button
+  type="button"
+  id="theme-toggle"
+  class="group grid size-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+  aria-label="Toggle light and dark theme"
+>
+  <svg viewBox="0 0 24 24" class="size-[18px] overflow-visible" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+    <!-- One glyph that morphs: a moon in dark mode, a sun with rays in light mode. -->
+    <mask id="moon-cut">
+      <rect width="24" height="24" fill="white" />
+      <circle class="origin-center transition-transform duration-500 ease-(--ease-out-expo) [html:not(.dark)_&]:translate-x-[8px] [html:not(.dark)_&]:-translate-y-[8px]" cx="17" cy="7" r="6" fill="black" />
+    </mask>
+    <circle class="origin-center transition-transform duration-500 ease-(--ease-out-expo) [html:not(.dark)_&]:scale-[0.6]" cx="12" cy="12" r="8" fill="currentColor" stroke="none" mask="url(#moon-cut)" />
+    <g class="origin-center transition-[opacity,transform] duration-500 ease-(--ease-out-expo) [html.dark_&]:scale-50 [html.dark_&]:rotate-45 [html.dark_&]:opacity-0">
+      <path d="M12 1.5v2M12 20.5v2M1.5 12h2M20.5 12h2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M4.6 19.4 6 18M18 6l1.4-1.4" />
+    </g>
+  </svg>
+</button>
+
+<script>
+  // Delegated once: the header tools are persisted across page navigations.
+  document.addEventListener('click', (event) => {
+    const button = (event.target as Element).closest('#theme-toggle');
+    if (!button) return;
+    const root = document.documentElement;
+    const toLight = root.classList.contains('dark');
+    const apply = () => {
+      root.classList.toggle('dark', !toLight);
+      localStorage.setItem('theme', toLight ? 'light' : 'dark');
+    };
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || reduce) return apply();
+
+    const { left, top, width, height } = button.getBoundingClientRect();
+    const x = left + width / 2;
+    const y = top + height / 2;
+    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    root.classList.add('theme-vt');
+    const vt = document.startViewTransition(apply);
+    vt.ready.then(() =>
+      root.animate(
+        { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+        { duration: 650, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', pseudoElement: '::view-transition-new(root)' },
+      ),
+    );
+    vt.finished.finally(() => root.classList.remove('theme-vt'));
+  });
+</script>
